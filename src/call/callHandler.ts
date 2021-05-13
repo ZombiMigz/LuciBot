@@ -1,12 +1,14 @@
 import { CategoryChannel, Guild, TextChannel, User, VoiceChannel, VoiceState } from "discord.js";
 import { client } from "../../bot";
+import { initCustomCallHandler } from "./customCallHandler";
 
 const Discord = require('discord.js');
 const names = require('../call/callNames.json');
 const channelList = require('../channelIDs.json');
 
 let tempChannels: string[] = [];
-function init() {
+export function initCallHandler() {
+    initCustomCallHandler();
     client.on('voiceStateUpdate', (fromState: VoiceState, state: VoiceState) => {
         handleJoin(fromState, state);
     })
@@ -35,20 +37,18 @@ function createChannel(state: VoiceState) {
         `${user.username.toString()}'s ${generateName()}`,
          {type: 'voice'})
         .then(newChannel => {
-            tempChannels.push(newChannel.id);
+            addTempChannel(newChannel.id);
             newChannel.setParent(category);
             state.member.voice.setChannel(newChannel);
         })
         .catch(console.log);   
 }
 
+export function addTempChannel(ID: string) {
+    tempChannels.push(ID);
+}
+
 function generateName() : String {
     let list: String[] = names.list;
     return list[Math.floor(Math.random() * list.length)];
 }
-
-
-module.exports = {
-    name: 'callHandler',
-    init: init
-};

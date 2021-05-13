@@ -1,18 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.client = void 0;
+var callHandler_1 = require("./src/call/callHandler");
 var Discord = require('discord.js');
-var client = new Discord.Client();
-exports.client = client;
+exports.client = new Discord.Client();
 var token = 'NjcxMDkwMjE5ODUxODQxNTM3.Xi33eA.14eswi11TKXGpO53cwagp96nBHo';
-var callHandler = require('./src/call/callHandler');
 // const database = require('./database');
 // const quotesHandler = require('./src/quotes/Handler');
 var prefix = '.';
-client.on('ready', function () {
-    callHandler.init();
+exports.client.on('ready', function () {
+    callHandler_1.initCallHandler();
     console.log('LuciBot Online and listening at prefix: ' + prefix);
     // database.init();
     // quotesHandler.init();
 });
-client.login(token);
+/*
+client.on('message', msg => {
+    if (msg.content.startsWith("spam ")) {
+        user = msg.mentions.users.first().toString();
+        for (i = 0; i < 10; i++) ping(msg.channel, user);
+    }
+})
+function ping(channel, user) {
+    channel.send(`${user}`)
+    .then()
+    .catch(console.error);
+}
+*/
+exports.client.login(token);
