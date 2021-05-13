@@ -1,7 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var bot_1 = require("../../bot");
 var Discord = require('discord.js');
+var names = require('../call/callNames.json');
 var tempChannels = [];
+function init() {
+    bot_1.client.on('voiceStateUpdate', function (fromState, state) {
+        handleJoin(fromState, state);
+    });
+}
 // move to call handler later
 var handleJoin = function (fromState, state) {
     if (state.channel != null && state.channel.name == "Create Call") {
@@ -18,7 +25,7 @@ function createChannel(state) {
     var category = state.channel.parent;
     var user = state.member.user;
     var guild = state.guild;
-    guild.channels.create(user.username.toString() + "'s Private Channel", { type: 'voice' })
+    guild.channels.create(user.username.toString() + "'s " + generateName(), { type: 'voice' })
         .then(function (newChannel) {
         tempChannels.push(newChannel.id);
         newChannel.setParent(category);
@@ -26,4 +33,11 @@ function createChannel(state) {
     })
         .catch(console.log);
 }
-module.exports = handleJoin;
+function generateName() {
+    var list = names.list;
+    return list[Math.floor(Math.random() * list.length)];
+}
+module.exports = {
+    name: 'callHandler',
+    init: init
+};

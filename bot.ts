@@ -3,7 +3,7 @@ import { CategoryChannel, Client, Guild, TextChannel, User, VoiceChannel, VoiceS
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const token = 'NjcxMDkwMjE5ODUxODQxNTM3.Xi33eA.14eswi11TKXGpO53cwagp96nBHo';
-const handleJoin = require('./src/call/callHandler');
+const callHandler = require('./src/call/callHandler');
 
 // const database = require('./database');
 // const quotesHandler = require('./src/quotes/Handler');
@@ -11,19 +11,11 @@ const handleJoin = require('./src/call/callHandler');
 let prefix = '.'
 
 client.on('ready', () => {
+    callHandler.init();
     console.log('LuciBot Online and listening at prefix: ' + prefix);
     // database.init();
     // quotesHandler.init();
 })
-
-client.on('voiceStateUpdate', (fromState: VoiceState, state: VoiceState) => {
-    handleJoin(fromState, state);
-})
-
-
-
-
-
 
 /* 
 client.on('message', msg => {
