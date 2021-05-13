@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var bot_1 = require("../../bot");
 var Discord = require('discord.js');
 var names = require('../call/callNames.json');
+var channelList = require('../channelIDs.json');
 var tempChannels = [];
 function init() {
     bot_1.client.on('voiceStateUpdate', function (fromState, state) {
@@ -11,7 +12,8 @@ function init() {
 }
 // move to call handler later
 var handleJoin = function (fromState, state) {
-    if (state.channel != null && state.channel.name == "Create Call") {
+    if (state.channel != null &&
+        state.channelID == channelList["Create Call Channel"]) {
         createChannel(state);
     }
     if (fromState.channel != undefined) {

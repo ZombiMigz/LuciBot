@@ -2,7 +2,8 @@ import { CategoryChannel, Guild, TextChannel, User, VoiceChannel, VoiceState } f
 import { client } from "../../bot";
 
 const Discord = require('discord.js');
-const names: Object = require('../call/callNames.json');
+const names = require('../call/callNames.json');
+const channelList = require('../channelIDs.json');
 
 let tempChannels: string[] = [];
 function init() {
@@ -12,7 +13,8 @@ function init() {
 }
 // move to call handler later
 let handleJoin = (fromState: VoiceState, state: VoiceState) => {
-    if (state.channel != null && state.channel.name == "Create Call") {
+    if (state.channel != null && 
+        state.channelID == channelList["Create Call Channel"]) {
         createChannel(state);
     }
     
