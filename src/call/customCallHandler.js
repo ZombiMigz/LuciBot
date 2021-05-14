@@ -31,7 +31,9 @@ function readMessage(msg) {
             createChannel(name_1);
             msg.delete();
         }
-        sendError(msg, misunderstoodError + ' ' + tutorialMsg);
+        else {
+            sendError(msg, misunderstoodError + ' ' + tutorialMsg);
+        }
     }
 }
 function createChannel(name) {

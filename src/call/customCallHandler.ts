@@ -29,8 +29,10 @@ function readMessage(msg: Message) {
             let name:string = msg.content.substr(8);
             createChannel(name);
             msg.delete();
+        } else {
+            sendError(msg, misunderstoodError + ' ' + tutorialMsg);
         }
-        sendError(msg, misunderstoodError + ' ' + tutorialMsg);
+        
     } 
 }
 

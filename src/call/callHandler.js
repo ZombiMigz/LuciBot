@@ -24,7 +24,7 @@ var handleJoin = function (fromState, state) {
         if (tempChannels.includes(fromState.channelID) && fromState.channel.members.size == 0) {
             tempChannels.splice(tempChannels.indexOf(fromState.channelID), 1);
             fromState.channel.delete();
-        }
+         }
     }
 };
 function createChannel(state) {
