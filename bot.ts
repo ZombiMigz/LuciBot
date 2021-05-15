@@ -1,6 +1,7 @@
 import { CategoryChannel, Client, Guild, TextChannel, User, VoiceChannel, VoiceState } from "discord.js";
 import { initCallHandler } from "./src/call/callHandler";
 import { initCustomCallHandler } from "./src/call/customCallHandler";
+import { initDebugger } from "./src/debug/debug";
 
 const Discord = require('discord.js');
 export const client: Client = new Discord.Client();
@@ -10,9 +11,11 @@ const token = 'NjcxMDkwMjE5ODUxODQxNTM3.Xi33eA.14eswi11TKXGpO53cwagp96nBHo';
 // const quotesHandler = require('./src/quotes/Handler');
 
 let prefix = '.'
-client.on('ready', () => {
+
+
+client.on('ready', () => { 
     initCallHandler();
-    
+    initDebugger();
     console.log('LuciBot Online and listening at prefix: ' + prefix);
     // database.init();
     // quotesHandler.init();
@@ -32,4 +35,4 @@ function ping(channel, user) {
 } 
 */
 
-client.login(token)
+client.login(token) 
