@@ -1,5 +1,5 @@
 import { APIMessageContentResolvable, CategoryChannel, Channel, Client, DiscordAPIError, Guild, Message, TextChannel, VoiceChannel } from "discord.js";
-import { client } from "../../bot";
+import { client, prefix } from "../../bot";
 import { addTempChannel } from "./callHandler";
 
 const channelList = require('../channelIDs.json');
@@ -24,7 +24,7 @@ export function initCustomCallHandler() {
 function readMessage(msg: Message) {
     if (msg.author.bot) return;
     if (createChannelID == msg.channel.id){
-        if (msg.content.split(' ')[0] == ".create") {
+        if (msg.content.split(' ')[0] ==  prefix + "create") {
             if (msg.content.length > 100) sendError(msg, msgLengthError);
             let name:string = msg.content.substr(8);
             createChannel(name);

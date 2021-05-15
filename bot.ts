@@ -10,7 +10,7 @@ const token = 'NjcxMDkwMjE5ODUxODQxNTM3.Xi33eA.14eswi11TKXGpO53cwagp96nBHo';
 // const database = require('./database');
 // const quotesHandler = require('./src/quotes/Handler');
 
-let prefix = '.'
+export let prefix = '.'
 
 
 client.on('ready', () => { 
