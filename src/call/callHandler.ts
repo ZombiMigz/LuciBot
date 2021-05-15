@@ -1,17 +1,21 @@
 import { CategoryChannel, Guild, TextChannel, User, VoiceChannel, VoiceState } from "discord.js";
 import { client } from "../../bot";
 import { initCustomCallHandler } from "./customCallHandler";
+import { readFileSync, writeFileSync} from "fs";
+
 
 const Discord = require('discord.js');
 const names = require('../call/callNames.json');
 const channelList = require('../channelIDs.json');
 
-let tempChannels: string[] = [];
+
+let tempChannels: string[] = JSON.parse(readFileSync('src/call/tempChannels.json').toString()).tempChannels;
 export function initCallHandler() {
     initCustomCallHandler();
     client.on('voiceStateUpdate', (fromState: VoiceState, state: VoiceState) => {
         handleJoin(fromState, state);
     })
+
 }
 // move to call handler later
 let handleJoin = (fromState: VoiceState, state: VoiceState) => {
@@ -23,6 +27,7 @@ let handleJoin = (fromState: VoiceState, state: VoiceState) => {
     if (fromState.channel != undefined) {
         if (tempChannels.includes(fromState.channelID) && fromState.channel.members.size == 0) {
             tempChannels.splice(tempChannels.indexOf(fromState.channelID), 1);
+            updateFile();
             fromState.channel.delete();
         }
     }
@@ -46,6 +51,11 @@ function createChannel(state: VoiceState) {
 
 export function addTempChannel(ID: string) {
     tempChannels.push(ID);
+    updateFile();
+}
+
+function updateFile() {
+    writeFileSync("src/call/tempChannels.json", JSON.stringify({"tempChannels": tempChannels }))
 }
 
 function generateName() : String {

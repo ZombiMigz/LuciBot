@@ -3,10 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.addTempChannel = exports.initCallHandler = void 0;
 var bot_1 = require("../../bot");
 var customCallHandler_1 = require("./customCallHandler");
+var fs_1 = require("fs");
 var Discord = require('discord.js');
 var names = require('../call/callNames.json');
 var channelList = require('../channelIDs.json');
-var tempChannels = [];
+var tempChannels = JSON.parse(fs_1.readFileSync('src/call/tempChannels.json').toString()).tempChannels;
 function initCallHandler() {
     customCallHandler_1.initCustomCallHandler();
     bot_1.client.on('voiceStateUpdate', function (fromState, state) {
@@ -23,8 +24,9 @@ var handleJoin = function (fromState, state) {
     if (fromState.channel != undefined) {
         if (tempChannels.includes(fromState.channelID) && fromState.channel.members.size == 0) {
             tempChannels.splice(tempChannels.indexOf(fromState.channelID), 1);
+            updateFile();
             fromState.channel.delete();
-         }
+        }
     }
 };
 function createChannel(state) {
@@ -41,8 +43,12 @@ function createChannel(state) {
 }
 function addTempChannel(ID) {
     tempChannels.push(ID);
+    updateFile();
 }
 exports.addTempChannel = addTempChannel;
+function updateFile() {
+    fs_1.writeFileSync("src/call/tempChannels.json", JSON.stringify({ "tempChannels": tempChannels }));
+}
 function generateName() {
     var list = names.list;
     return list[Math.floor(Math.random() * list.length)];
