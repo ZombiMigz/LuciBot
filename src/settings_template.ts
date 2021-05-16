@@ -6,5 +6,6 @@ export interface Settings {
         "Custom Call Creator": string,
         "Debug Channel": string
     },
-    "Call Names": string[]
+    "Call Names": string[],
+    "token": string
 }

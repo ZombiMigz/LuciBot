@@ -6,7 +6,7 @@ import { Settings } from "./src/settings_template";
 
 const Discord = require('discord.js');
 export const client: Client = new Discord.Client();
-const token = 'NjcxMDkwMjE5ODUxODQxNTM3.Xi33eA.14eswi11TKXGpO53cwagp96nBHo';
+const token = settings.token;
 
 
 
