@@ -1,12 +1,12 @@
 import { CategoryChannel, Guild, TextChannel, User, VoiceChannel, VoiceState } from "discord.js";
-import { client } from "../../bot";
+import { client, settings } from "../../bot";
 import { initCustomCallHandler } from "./customCallHandler";
 import { readFileSync, writeFileSync} from "fs";
 
 
 const Discord = require('discord.js');
-const names = require('../call/callNames.json');
-const channelList = require('../channelIDs.json');
+const names: string[] = settings["Call Names"];
+const channelIDs = settings["Call IDs"];
 
 
 let tempChannels: string[] = JSON.parse(readFileSync('src/call/tempChannels.json').toString()).tempChannels;
@@ -20,7 +20,7 @@ export function initCallHandler() {
 // move to call handler later
 let handleJoin = (fromState: VoiceState, state: VoiceState) => {
     if (state.channel != null && 
-        state.channelID == channelList["Create Call Channel"]) {
+        state.channelID == channelIDs["Create Call Channel"]) {
         createChannel(state);
     }
     
@@ -59,6 +59,6 @@ function updateFile() {
 }
 
 function generateName() : String {
-    let list: String[] = names.list;
+    let list: String[] = names;
     return list[Math.floor(Math.random() * list.length)];
 }

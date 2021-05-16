@@ -1,11 +1,15 @@
-import { CategoryChannel, Client, Guild, TextChannel, User, VoiceChannel, VoiceState } from "discord.js";
+import { Client } from "discord.js";
+export const settings: Settings = require('./src/settings');
 import { initCallHandler } from "./src/call/callHandler";
-import { initCustomCallHandler } from "./src/call/customCallHandler";
 import { initDebugger } from "./src/debug/debug";
+import { Settings } from "./src/settings_template";
 
 const Discord = require('discord.js');
 export const client: Client = new Discord.Client();
 const token = 'NjcxMDkwMjE5ODUxODQxNTM3.Xi33eA.14eswi11TKXGpO53cwagp96nBHo';
+
+
+
 
 // const database = require('./database');
 // const quotesHandler = require('./src/quotes/Handler');

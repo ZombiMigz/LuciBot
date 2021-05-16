@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.initCustomCallHandler = void 0;
 var bot_1 = require("../../bot");
 var callHandler_1 = require("./callHandler");
-var channelList = require('../channelIDs.json');
+var channelList = bot_1.settings["Call IDs"];
 var createChannelID = channelList["Custom Call Creator"];
 var channel;
 var tutorialMsg = "To create your own channel, type ```.create [channelname]``` Make sure to join the channel in 15 seconds or it will delete itself. Have fun!";
@@ -24,7 +24,7 @@ function readMessage(msg) {
     if (msg.author.bot)
         return;
     if (createChannelID == msg.channel.id) {
-        if (msg.content.split(' ')[0] == ".create") {
+        if (msg.content.split(' ')[0] == bot_1.prefix + "create") {
             if (msg.content.length > 100)
                 sendError(msg, msgLengthError);
             var name_1 = msg.content.substr(8);

@@ -1,9 +1,8 @@
 import { APIMessageContentResolvable, CategoryChannel, Channel, Client, DiscordAPIError, Guild, Message, TextChannel, VoiceChannel } from "discord.js";
-import { client, prefix } from "../../bot";
+import { client, prefix, settings } from "../../bot";
 import { addTempChannel } from "./callHandler";
-
-const channelList = require('../channelIDs.json');
-const createChannelID: string = channelList["Custom Call Creator"]
+const channelList = settings["Call IDs"];
+const createChannelID: string = channelList["Custom Call Creator"];
 let channel: TextChannel;
 
 const tutorialMsg = "To create your own channel, type ```.create [channelname]``` Make sure to join the channel in 15 seconds or it will delete itself. Have fun!";
