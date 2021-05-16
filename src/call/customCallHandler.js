@@ -9,6 +9,7 @@ var channel;
 var tutorialMsg = "To create your own channel, type ```.create [channelname]``` Make sure to join the channel in 15 seconds or it will delete itself. Have fun!";
 var msgLengthError = "Your channel name was too long or too short. Please keep the name between 1-100 characters. :)";
 var misunderstoodError = "Sorry, I didn't understand.";
+var unknownError = "I did not understand the channel name. Please try again.";
 function initCustomCallHandler() {
     bot_1.client.channels.fetch(createChannelID)
         .then(function (res) {
@@ -25,13 +26,13 @@ function readMessage(msg) {
         return;
     if (createChannelID == msg.channel.id) {
         if (msg.content.split(' ')[0] == bot_1.prefix + "create") {
-            if (msg.content.length > 100 || msg.content.length < 1) {
+            var name_1 = msg.content.substr(8);
+            if (name_1.length > 100 || name_1.length < 1) {
                 sendError(msg, msgLengthError);
                 return;
             }
             else {
-                var name_1 = msg.content.substr(8);
-                createChannel(name_1);
+                createChannel(msg, name_1);
                 msg.delete();
             }
             ;
@@ -41,15 +42,21 @@ function readMessage(msg) {
         }
     }
 }
-function createChannel(name) {
+function createChannel(msg, name) {
     bot_1.client.channels.fetch(channelList["Voice Call Category"])
         .then(function (res) {
         var category = res;
         var guild = category.guild;
-        guild.channels.create(name, { type: "voice" }).then(function (channel) {
-            channel.setParent(category);
-            setTimeout(function () { checkChannel(channel); }, 10000);
-        });
+        try {
+            guild.channels.create(name, { type: "voice" }).then(function (channel) {
+                channel.setParent(category);
+                setTimeout(function () { checkChannel(channel); }, 10000);
+            });
+        }
+        catch (err) {
+            console.log(err);
+            sendError(msg, unknownError);
+        }
     })
         .catch(console.log);
 }
