@@ -6,7 +6,7 @@ const createChannelID: string = channelList["Custom Call Creator"];
 let channel: TextChannel;
 
 const tutorialMsg = "To create your own channel, type ```.create [channelname]``` Make sure to join the channel in 15 seconds or it will delete itself. Have fun!";
-const msgLengthError = "Your channel name was too long. Please try a shorter name. :)"
+const msgLengthError = "Your channel name was too long or too short. Please keep the name between 1-100 characters. :)"
 const misunderstoodError = "Sorry, I didn't understand."
 
 export function initCustomCallHandler() {
@@ -24,10 +24,15 @@ function readMessage(msg: Message) {
     if (msg.author.bot) return;
     if (createChannelID == msg.channel.id){
         if (msg.content.split(' ')[0] ==  prefix + "create") {
-            if (msg.content.length > 100) sendError(msg, msgLengthError);
-            let name:string = msg.content.substr(8);
-            createChannel(name);
-            msg.delete();
+            if (msg.content.length > 100  || msg.content.length < 1) {
+                sendError(msg, msgLengthError);
+                return;
+            } else {
+                let name:string = msg.content.substr(8);
+                createChannel(name);
+                msg.delete()
+            }
+            ;
         } else {
             sendError(msg, misunderstoodError + ' ' + tutorialMsg);
         }

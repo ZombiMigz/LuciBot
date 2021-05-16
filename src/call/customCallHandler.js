@@ -7,7 +7,7 @@ var channelList = bot_1.settings["Call IDs"];
 var createChannelID = channelList["Custom Call Creator"];
 var channel;
 var tutorialMsg = "To create your own channel, type ```.create [channelname]``` Make sure to join the channel in 15 seconds or it will delete itself. Have fun!";
-var msgLengthError = "Your channel name was too long. Please try a shorter name. :)";
+var msgLengthError = "Your channel name was too long or too short. Please keep the name between 1-100 characters. :)";
 var misunderstoodError = "Sorry, I didn't understand.";
 function initCustomCallHandler() {
     bot_1.client.channels.fetch(createChannelID)
@@ -25,11 +25,16 @@ function readMessage(msg) {
         return;
     if (createChannelID == msg.channel.id) {
         if (msg.content.split(' ')[0] == bot_1.prefix + "create") {
-            if (msg.content.length > 100)
+            if (msg.content.length > 100 || msg.content.length < 1) {
                 sendError(msg, msgLengthError);
-            var name_1 = msg.content.substr(8);
-            createChannel(name_1);
-            msg.delete();
+                return;
+            }
+            else {
+                var name_1 = msg.content.substr(8);
+                createChannel(name_1);
+                msg.delete();
+            }
+            ;
         }
         else {
             sendError(msg, misunderstoodError + ' ' + tutorialMsg);
