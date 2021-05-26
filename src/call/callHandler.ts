@@ -28,11 +28,18 @@ let handleJoin = (fromState: VoiceState, state: VoiceState) => {
         if (tempChannels.includes(fromState.channelID) && fromState.channel.members.size == 0) {
             tempChannels.splice(tempChannels.indexOf(fromState.channelID), 1);
             updateFile();
-            fromState.channel.delete();
+            deleteChannel(fromState.channel);
         }
     }
     
 }
+
+export function deleteChannel(channel: VoiceChannel) {
+    channel.delete().catch(err => {
+        console.log(`Error deleting channel \n${err}`)
+    })
+}
+
 function createChannel(state: VoiceState) {
     let category: CategoryChannel = state.channel.parent;
     let user: User = state.member.user;

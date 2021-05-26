@@ -1,6 +1,6 @@
 import { APIMessageContentResolvable, CategoryChannel, Channel, Client, DiscordAPIError, Guild, Message, TextChannel, VoiceChannel } from "discord.js";
 import { client, prefix, settings } from "../../bot";
-import { addTempChannel } from "./callHandler";
+import { addTempChannel, deleteChannel } from "./callHandler";
 const channelList = settings["Call IDs"];
 const createChannelID: string = channelList["Custom Call Creator"];
 let channel: TextChannel;
@@ -63,7 +63,7 @@ function createChannel(msg: Message, name: string) {
 
 function checkChannel(channel: VoiceChannel) {
     if (channel.members.size < 1) {
-        channel.delete();
+        deleteChannel(channel);
         return;
     }
     addTempChannel(channel.id);

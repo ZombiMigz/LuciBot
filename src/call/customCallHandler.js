@@ -62,7 +62,7 @@ function createChannel(msg, name) {
 }
 function checkChannel(channel) {
     if (channel.members.size < 1) {
-        channel.delete();
+        callHandler_1.deleteChannel(channel);
         return;
     }
     callHandler_1.addTempChannel(channel.id);

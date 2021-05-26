@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addTempChannel = exports.initCallHandler = void 0;
+exports.addTempChannel = exports.deleteChannel = exports.initCallHandler = void 0;
 var bot_1 = require("../../bot");
 var customCallHandler_1 = require("./customCallHandler");
 var fs_1 = require("fs");
@@ -25,10 +25,16 @@ var handleJoin = function (fromState, state) {
         if (tempChannels.includes(fromState.channelID) && fromState.channel.members.size == 0) {
             tempChannels.splice(tempChannels.indexOf(fromState.channelID), 1);
             updateFile();
-            fromState.channel.delete();
+            deleteChannel(fromState.channel);
         }
     }
 };
+function deleteChannel(channel) {
+    channel.delete().catch(function (err) {
+        console.log("Error deleting channel \n" + err);
+    });
+}
+exports.deleteChannel = deleteChannel;
 function createChannel(state) {
     var category = state.channel.parent;
     var user = state.member.user;
