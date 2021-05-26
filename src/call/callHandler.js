@@ -4,9 +4,7 @@ exports.addTempChannel = exports.deleteChannel = exports.initCallHandler = void 
 var bot_1 = require("../../bot");
 var customCallHandler_1 = require("./customCallHandler");
 var fs_1 = require("fs");
-var Discord = require('discord.js');
-var names = bot_1.settings["Call Names"];
-var channelIDs = bot_1.settings["Call IDs"];
+var settingsHandler_1 = require("../settingsHandler");
 var tempChannels = JSON.parse(fs_1.readFileSync('src/call/tempChannels.json').toString()).tempChannels;
 function initCallHandler() {
     customCallHandler_1.initCustomCallHandler();
@@ -18,7 +16,7 @@ exports.initCallHandler = initCallHandler;
 // move to call handler later
 var handleJoin = function (fromState, state) {
     if (state.channel != null &&
-        state.channelID == channelIDs["Create Call Channel"]) {
+        state.channelID == settingsHandler_1.createCallVoiceID) {
         createChannel(state);
     }
     if (fromState.channel != undefined) {
@@ -56,6 +54,6 @@ function updateFile() {
     fs_1.writeFileSync("src/call/tempChannels.json", JSON.stringify({ "tempChannels": tempChannels }));
 }
 function generateName() {
-    var list = names;
+    var list = settingsHandler_1.customCallNames;
     return list[Math.floor(Math.random() * list.length)];
 }

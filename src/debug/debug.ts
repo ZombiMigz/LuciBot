@@ -1,11 +1,11 @@
 import { Message, TextChannel } from "discord.js";
-import { client, settings } from "../../bot";
+import { client } from "../../bot";
+import { debugChannelID } from "../settingsHandler";
 
-const channelID: string = <string> settings["Call IDs"]["Debug Channel"];
 
 let debugChannel: TextChannel;
 export function initDebugger() {
-    client.channels.fetch(channelID).then(channel => {
+    client.channels.fetch(debugChannelID).then(channel => {
         debugChannel = <TextChannel> channel;
         debugChannel.send("Successfully connected to debug channel");
     });

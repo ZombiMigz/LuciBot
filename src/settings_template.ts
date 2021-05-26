@@ -1,12 +1,12 @@
 export interface Settings {
-    "Call IDs": {
-        "Create Call Channel": string,
-        "Voice Call Category": string,
-        "AFK Channel": string,
-        "Custom Call Creator": string,
-        "Debug Channel": string
+    "Channel IDs": {
+        "Create Call Voice": string,
+        "Create Call Text": string,
+        "Custom Call Category": string,
+        "AFK": string,
+        "Debug": string
     },
-    "Call Names": string[],
-    "token": string,
-    "prefix": string
+    "Custom Call Names": string[],
+    "Token": string,
+    "Prefix": string
 }
