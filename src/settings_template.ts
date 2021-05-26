@@ -7,5 +7,6 @@ export interface Settings {
         "Debug Channel": string
     },
     "Call Names": string[],
-    "token": string
+    "token": string,
+    "prefix": string
 }

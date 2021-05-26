@@ -9,25 +9,10 @@ exports.client = new Discord.Client();
 var token = exports.settings.token;
 // const database = require('./database');
 // const quotesHandler = require('./src/quotes/Handler');
-exports.prefix = '.';
+exports.prefix = exports.settings.prefix;
 exports.client.on('ready', function () {
     callHandler_1.initCallHandler();
     debug_1.initDebugger();
     console.log('LuciBot Online and listening at prefix: ' + exports.prefix);
-    // database.init();
-    // quotesHandler.init();
 });
-/*
-client.on('message', msg => {
-    if (msg.content.startsWith("spam ")) {
-        user = msg.mentions.users.first().toString();
-        for (i = 0; i < 10; i++) ping(msg.channel, user);
-    }
-})
-function ping(channel, user) {
-    channel.send(`${user}`)
-    .then()
-    .catch(console.error);
-}
-*/
 exports.client.login(token);

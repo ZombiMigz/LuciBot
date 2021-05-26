@@ -14,29 +14,15 @@ const token = settings.token;
 // const database = require('./database');
 // const quotesHandler = require('./src/quotes/Handler');
 
-export let prefix = '.'
+
+export const prefix: string = settings.prefix;
 
 
 client.on('ready', () => { 
     initCallHandler();
     initDebugger();
     console.log('LuciBot Online and listening at prefix: ' + prefix);
-    // database.init();
-    // quotesHandler.init();
 })
 
-/* 
-client.on('message', msg => {
-    if (msg.content.startsWith("spam ")) {
-        user = msg.mentions.users.first().toString();
-        for (i = 0; i < 10; i++) ping(msg.channel, user);
-    }
-})
-function ping(channel, user) {
-    channel.send(`${user}`)
-    .then()
-    .catch(console.error);
-} 
-*/
 
 client.login(token) 
