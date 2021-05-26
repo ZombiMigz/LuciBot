@@ -16,7 +16,7 @@ const token = settings.token;
 // const quotesHandler = require('./src/quotes/Handler');
 
 
-const prefix: string = settings.prefix;
+export const prefix: string = settings.prefix;
 
 
 client.on('ready', () => { 
@@ -24,7 +24,7 @@ client.on('ready', () => {
     initDebugger();
 
 
-    initCommandHandler(prefix);
+    initCommandHandler();
     console.log('LuciBot Online and listening at prefix: ' + prefix);
 })
 

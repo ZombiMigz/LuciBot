@@ -18,11 +18,9 @@ export function initCustomCallHandler() {
             channel.send(tutorialMsg);
         })
         .catch((err) => console.log("Failed to find call creation text channel"));
-    client.on('message', (msg) => {readMessage(msg)})
 }
 
-function readMessage(msg: Message) {
-    if (msg.author.bot) return;
+export function customCallMessage(msg: Message) {
     if (createChannelID == msg.channel.id){
         if (msg.content.split(' ')[0] ==  prefix + "create") {
             let name:string = msg.content.substr(8);

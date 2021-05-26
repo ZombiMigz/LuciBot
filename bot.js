@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.client = exports.settings = void 0;
+exports.prefix = exports.client = exports.settings = void 0;
 exports.settings = require('./src/settings');
 var callHandler_1 = require("./src/call/callHandler");
 var commandHandler_1 = require("./src/commands/commandHandler");
@@ -10,11 +10,11 @@ exports.client = new Discord.Client();
 var token = exports.settings.token;
 // const database = require('./database');
 // const quotesHandler = require('./src/quotes/Handler');
-var prefix = exports.settings.prefix;
+exports.prefix = exports.settings.prefix;
 exports.client.on('ready', function () {
     callHandler_1.initCallHandler();
     debug_1.initDebugger();
-    commandHandler_1.initCommandHandler(prefix);
-    console.log('LuciBot Online and listening at prefix: ' + prefix);
+    commandHandler_1.initCommandHandler();
+    console.log('LuciBot Online and listening at prefix: ' + exports.prefix);
 });
 exports.client.login(token);

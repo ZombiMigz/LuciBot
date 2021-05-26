@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initCustomCallHandler = void 0;
+exports.customCallMessage = exports.initCustomCallHandler = void 0;
 var bot_1 = require("../../bot");
 var callHandler_1 = require("./callHandler");
 var channelList = bot_1.settings["Call IDs"];
@@ -18,12 +18,9 @@ function initCustomCallHandler() {
         channel.send(tutorialMsg);
     })
         .catch(function (err) { return console.log("Failed to find call creation text channel"); });
-    bot_1.client.on('message', function (msg) { readMessage(msg); });
 }
 exports.initCustomCallHandler = initCustomCallHandler;
-function readMessage(msg) {
-    if (msg.author.bot)
-        return;
+function customCallMessage(msg) {
     if (createChannelID == msg.channel.id) {
         if (msg.content.split(' ')[0] == bot_1.prefix + "create") {
             var name_1 = msg.content.substr(8);
@@ -42,6 +39,7 @@ function readMessage(msg) {
         }
     }
 }
+exports.customCallMessage = customCallMessage;
 function createChannel(msg, name) {
     bot_1.client.channels.fetch(channelList["Voice Call Category"])
         .then(function (res) {
