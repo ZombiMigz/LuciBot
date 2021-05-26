@@ -8,6 +8,13 @@ export function initCommandHandler() {
     client.on('message', msg => {
         if (!msg.content.startsWith(prefix)) return;
         if (msg.author.bot) return;
+
+
         if (createCallTextID == msg.channel.id) customCallMessage(msg);
+
+
+        msg.content = msg.content.substring(prefix.length);
+        
+
     })
 }

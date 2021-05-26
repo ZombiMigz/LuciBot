@@ -12,6 +12,7 @@ function initCommandHandler() {
             return;
         if (settingsHandler_1.createCallTextID == msg.channel.id)
             customCallHandler_1.customCallMessage(msg);
+        msg.content = msg.content.substring(settingsHandler_1.prefix.length);
     });
 }
 exports.initCommandHandler = initCommandHandler;
