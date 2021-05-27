@@ -21,4 +21,4 @@ client.on('ready', () => {
 
 
 
-client.login(token) 
+client.login(token);
