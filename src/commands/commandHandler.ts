@@ -2,6 +2,7 @@ import { client } from "../../bot";
 import { customCallMessage } from "../call/customCallHandler";
 import { createCallTextID, prefix } from "../settingsHandler";
 import { spam } from "./misc/spamCommand";
+import { pingCall } from "./pingCall/pingCall";
 
 
 
@@ -15,8 +16,9 @@ export function initCommandHandler() {
 
         //any channel
         msg.content = msg.content.substring(prefix.length);
-        if (msg.content.split(' ')[0] == "spam") spam(msg);
-
+        let key: string = msg.content.split(' ')[0];
+        if (key == "spam") spam(msg);
+        if (key == "pingcall" || key == "pc") pingCall(msg);
 
         //must be in lucibot channel
     })
