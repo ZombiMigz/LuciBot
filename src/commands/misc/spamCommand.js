@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.spam = void 0;
-var misunderstood = "Sorry I didn't understand. To use the spam command type ```.spam <1-5> <@user> <message>```";
+var settingsHandler_1 = require("../../settingsHandler");
+var misunderstood = "Sorry I didn't understand. To use the spam command type ```" + settingsHandler_1.prefix + "spam <1-5> <@user> <message>```";
 function spam(msg) {
     msg.content = msg.content.substring(5);
     var content = msg.content.split(' ');
