@@ -5,7 +5,19 @@ var bot_1 = require("../../bot");
 var customCallHandler_1 = require("./customCallHandler");
 var fs_1 = require("fs");
 var settingsHandler_1 = require("../settingsHandler");
-var tempChannels = JSON.parse(fs_1.readFileSync('src/call/tempChannels.json').toString()).tempChannels;
+require("fs");
+var tempChannelsTemplate = { "tempChannels": [] };
+var tempChannels;
+try {
+    tempChannels = JSON.parse(fs_1.readFileSync('src/call/tempChannels.json').toString()).tempChannels;
+}
+catch (err) {
+    tempChannels = [];
+    fs_1.writeFile('src/call/tempChannels.json', '', function (err) {
+        console.log("Created new tempChannels file");
+    });
+    updateFile();
+}
 function initCallHandler() {
     customCallHandler_1.initCustomCallHandler();
     bot_1.client.on('voiceStateUpdate', function (fromState, state) {

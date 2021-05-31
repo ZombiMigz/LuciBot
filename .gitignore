@@ -1,3 +1,4 @@
 node_modules/
 settings.json
 tempChannels.json
+src/call/tempChannels.json

@@ -1,14 +1,23 @@
 import { CategoryChannel, Guild, TextChannel, User, VoiceChannel, VoiceState } from "discord.js";
 import { client} from "../../bot";
 import { initCustomCallHandler } from "./customCallHandler";
-import { readFileSync, writeFileSync} from "fs";
+import { readFileSync, writeFile, writeFileSync} from "fs";
 import { createCallVoiceID, customCallNames } from "../settingsHandler";
+import "fs";
 
 
+let tempChannelsTemplate: Object = {"tempChannels": []}; 
+let tempChannels:string[];
+try {
+    tempChannels = JSON.parse(readFileSync('src/call/tempChannels.json').toString()).tempChannels;
+} catch (err) {
+    tempChannels = [];
+    writeFile('src/call/tempChannels.json', '', (err) => {
+        console.log("Created new tempChannels file");
+    })
+    updateFile();
+}
 
-
-
-let tempChannels: string[] = JSON.parse(readFileSync('src/call/tempChannels.json').toString()).tempChannels;
 export function initCallHandler() {
     initCustomCallHandler();
     client.on('voiceStateUpdate', (fromState: VoiceState, state: VoiceState) => {
