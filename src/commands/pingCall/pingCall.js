@@ -11,7 +11,6 @@ function pingCall(msg) {
         sendError(msg, misunderstood);
         return;
     }
-    // id length is 18
     var id = msg.mentions.members.first().id;
     var user;
     bot_1.client.users.fetch(id).then(function (res) {
