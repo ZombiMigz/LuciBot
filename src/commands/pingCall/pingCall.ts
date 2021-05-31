@@ -13,7 +13,7 @@ export function pingCall(msg: Message) {
     }
 
     // id length is 18
-    let id: string = content[1].substring(3, 21);
+    let id: string = msg.mentions.members.first().id;
     let user: User; 
     client.users.fetch(id).then(res => {
         user = res;

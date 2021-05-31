@@ -12,7 +12,7 @@ function pingCall(msg) {
         return;
     }
     // id length is 18
-    var id = content[1].substring(3, 21);
+    var id = msg.mentions.members.first().id;
     var user;
     bot_1.client.users.fetch(id).then(function (res) {
         user = res;
