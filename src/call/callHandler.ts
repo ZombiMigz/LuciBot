@@ -28,14 +28,15 @@ function loadTempChannelsFile() {
                 writeFile('src/call/tempChannels.json', '', (err) => {
                     console.log("Created new tempChannels file");
                 })
-                tempChannels = [];
+                
                 updateFile();
             }
             catch (e) {
                 console.log(`Failed to create new tempChannels file.\n${e}`);
+                client.destroy();
             }
         } else {
-            tempChannels = JSON.parse(readFileSync(filePath).toString());
+            tempChannels = JSON.parse(readFileSync(filePath).toString()).tempChannels;
         }
  
     })

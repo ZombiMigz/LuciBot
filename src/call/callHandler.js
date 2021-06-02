@@ -26,15 +26,15 @@ function loadTempChannelsFile() {
                 fs_1.writeFile('src/call/tempChannels.json', '', function (err) {
                     console.log("Created new tempChannels file");
                 });
-                tempChannels = [];
                 updateFile();
             }
             catch (e) {
                 console.log("Failed to create new tempChannels file.\n" + e);
+                bot_1.client.destroy();
             }
         }
         else {
-            tempChannels = JSON.parse(fs_1.readFileSync(filePath).toString());
+            tempChannels = JSON.parse(fs_1.readFileSync(filePath).toString()).tempChannels;
         }
     });
 }
