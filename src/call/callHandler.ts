@@ -1,32 +1,50 @@
 import { CategoryChannel, Guild, TextChannel, User, VoiceChannel, VoiceState } from "discord.js";
 import { client} from "../../bot";
 import { initCustomCallHandler } from "./customCallHandler";
-import { readFileSync, writeFile, writeFileSync} from "fs";
+import { access, constants, fstat, readFileSync, writeFile, writeFileSync} from "fs";
 import { createCallVoiceID, customCallNames } from "../settingsHandler";
 import "fs";
 
 
 let tempChannelsTemplate: Object = {"tempChannels": []}; 
 let tempChannels:string[];
-try {
-    tempChannels = JSON.parse(readFileSync('src/call/tempChannels.json').toString()).tempChannels;
-} catch (err) {
-    tempChannels = [];
-    writeFile('src/call/tempChannels.json', '', (err) => {
-        console.log("Created new tempChannels file");
-    })
-    updateFile();
-}
+
 
 export function initCallHandler() {
+    loadTempChannelsFile();
     initCustomCallHandler();
     client.on('voiceStateUpdate', (fromState: VoiceState, state: VoiceState) => {
         handleJoin(fromState, state);
     })
-
 }
+
+function loadTempChannelsFile() {
+    let filePath: string = 'src/call/tempChannels.json';
+    access(filePath, constants.W_OK, err => {
+        if (err) {
+            console.log(`/src/call/tempChannels.json does not exist or is not read/writable.\n${err}`);
+            try {
+                console.log(`Attempting to create new tempChannels file`);
+                writeFile('src/call/tempChannels.json', '', (err) => {
+                    console.log("Created new tempChannels file");
+                })
+                tempChannels = [];
+                updateFile();
+            }
+            catch (e) {
+                console.log(`Failed to create new tempChannels file.\n${e}`);
+            }
+        } else {
+            tempChannels = JSON.parse(readFileSync(filePath).toString());
+        }
+ 
+    })
+    
+}
+
+
 // move to call handler later
-let handleJoin = (fromState: VoiceState, state: VoiceState) => {
+function handleJoin (fromState: VoiceState, state: VoiceState) {
     if (state.channel != null && 
         state.channelID == createCallVoiceID) {
         createChannel(state);

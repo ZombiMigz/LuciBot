@@ -8,25 +8,38 @@ var settingsHandler_1 = require("../settingsHandler");
 require("fs");
 var tempChannelsTemplate = { "tempChannels": [] };
 var tempChannels;
-try {
-    tempChannels = JSON.parse(fs_1.readFileSync('src/call/tempChannels.json').toString()).tempChannels;
-}
-catch (err) {
-    tempChannels = [];
-    fs_1.writeFile('src/call/tempChannels.json', '', function (err) {
-        console.log("Created new tempChannels file");
-    });
-    updateFile();
-}
 function initCallHandler() {
+    loadTempChannelsFile();
     customCallHandler_1.initCustomCallHandler();
     bot_1.client.on('voiceStateUpdate', function (fromState, state) {
         handleJoin(fromState, state);
     });
 }
 exports.initCallHandler = initCallHandler;
+function loadTempChannelsFile() {
+    var filePath = 'src/call/tempChannels.json';
+    fs_1.access(filePath, fs_1.constants.W_OK, function (err) {
+        if (err) {
+            console.log("/src/call/tempChannels.json does not exist or is not read/writable.\n" + err);
+            try {
+                console.log("Attempting to create new tempChannels file");
+                fs_1.writeFile('src/call/tempChannels.json', '', function (err) {
+                    console.log("Created new tempChannels file");
+                });
+                tempChannels = [];
+                updateFile();
+            }
+            catch (e) {
+                console.log("Failed to create new tempChannels file.\n" + e);
+            }
+        }
+        else {
+            tempChannels = JSON.parse(fs_1.readFileSync(filePath).toString());
+        }
+    });
+}
 // move to call handler later
-var handleJoin = function (fromState, state) {
+function handleJoin(fromState, state) {
     if (state.channel != null &&
         state.channelID == settingsHandler_1.createCallVoiceID) {
         createChannel(state);
@@ -38,7 +51,7 @@ var handleJoin = function (fromState, state) {
             deleteChannel(fromState.channel);
         }
     }
-};
+}
 function deleteChannel(channel) {
     channel.delete().catch(function (err) {
         console.log("Error deleting channel \n" + err);
