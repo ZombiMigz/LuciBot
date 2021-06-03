@@ -7,7 +7,6 @@ import "fs";
 
 let tempChannels:string[];
 
-
 export function initCallHandler() {
     loadTempChannelsFile();
     initCustomCallHandler();
@@ -30,8 +29,6 @@ function loadTempChannelsFile() {
     })
     
 }
-
-
 // move to call handler later
 function handleJoin (fromState: VoiceState, state: VoiceState) {
     if (state.channel != null && 
@@ -45,8 +42,7 @@ function handleJoin (fromState: VoiceState, state: VoiceState) {
             updateFile();
             deleteChannel(fromState.channel);
         }
-    }
-    
+    } 
 }
 
 export function deleteChannel(channel: VoiceChannel) {
@@ -54,7 +50,6 @@ export function deleteChannel(channel: VoiceChannel) {
         console.log(`Error deleting channel \n${err}`)
     })
 }
-
 
 function createChannel(state: VoiceState) {
     let category: CategoryChannel = state.channel.parent;
