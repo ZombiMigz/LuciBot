@@ -4,9 +4,9 @@ import { initCustomCallHandler } from "./customCallHandler";
 import { access, constants, fstat, readFileSync, writeFile, writeFileSync} from "fs";
 import { createCallVoiceID, customCallNames } from "../settingsHandler";
 import "fs";
+import { Interface } from "readline";
 
 
-let tempChannelsTemplate: Object = {"tempChannels": []}; 
 let tempChannels:string[];
 
 
@@ -22,19 +22,9 @@ function loadTempChannelsFile() {
     let filePath: string = 'src/call/tempChannels.json';
     access(filePath, constants.W_OK, err => {
         if (err) {
-            console.log(`/src/call/tempChannels.json does not exist or is not read/writable.\n${err}`);
-            try {
-                console.log(`Attempting to create new tempChannels file`);
-                writeFile('src/call/tempChannels.json', '', (err) => {
-                    console.log("Created new tempChannels file");
-                })
-                
-                updateFile();
-            }
-            catch (e) {
-                console.log(`Failed to create new tempChannels file.\n${e}`);
-                client.destroy();
-            }
+            console.log(`${filePath} does not exist or is not read/writable.\n${err}`);
+            console.log(`creating new file`);
+            tempChannels = [];
         } else {
             tempChannels = JSON.parse(readFileSync(filePath).toString()).tempChannels;
         }
@@ -90,7 +80,12 @@ export function addTempChannel(ID: string) {
 }
 
 function updateFile() {
-    writeFileSync("src/call/tempChannels.json", JSON.stringify({"tempChannels": tempChannels }))
+    try {
+        writeFileSync("src/call/tempChannels.json", JSON.stringify({"tempChannels": tempChannels }))
+    } catch (err) {
+        console.log(`Failed to save tempChannels file: ${err}`);
+    }
+    
 }
 
 function generateName() : String {

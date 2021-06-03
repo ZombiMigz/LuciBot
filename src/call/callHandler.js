@@ -6,7 +6,6 @@ var customCallHandler_1 = require("./customCallHandler");
 var fs_1 = require("fs");
 var settingsHandler_1 = require("../settingsHandler");
 require("fs");
-var tempChannelsTemplate = { "tempChannels": [] };
 var tempChannels;
 function initCallHandler() {
     loadTempChannelsFile();
@@ -20,18 +19,9 @@ function loadTempChannelsFile() {
     var filePath = 'src/call/tempChannels.json';
     fs_1.access(filePath, fs_1.constants.W_OK, function (err) {
         if (err) {
-            console.log("/src/call/tempChannels.json does not exist or is not read/writable.\n" + err);
-            try {
-                console.log("Attempting to create new tempChannels file");
-                fs_1.writeFile('src/call/tempChannels.json', '', function (err) {
-                    console.log("Created new tempChannels file");
-                });
-                updateFile();
-            }
-            catch (e) {
-                console.log("Failed to create new tempChannels file.\n" + e);
-                bot_1.client.destroy();
-            }
+            console.log(filePath + " does not exist or is not read/writable.\n" + err);
+            console.log("creating new file");
+            tempChannels = [];
         }
         else {
             tempChannels = JSON.parse(fs_1.readFileSync(filePath).toString()).tempChannels;
@@ -76,7 +66,12 @@ function addTempChannel(ID) {
 }
 exports.addTempChannel = addTempChannel;
 function updateFile() {
-    fs_1.writeFileSync("src/call/tempChannels.json", JSON.stringify({ "tempChannels": tempChannels }));
+    try {
+        fs_1.writeFileSync("src/call/tempChannels.json", JSON.stringify({ "tempChannels": tempChannels }));
+    }
+    catch (err) {
+        console.log("Failed to save tempChannels file: " + err);
+    }
 }
 function generateName() {
     var list = settingsHandler_1.customCallNames;
