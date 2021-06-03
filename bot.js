@@ -15,5 +15,6 @@ exports.client.on('ready', function () {
     console.log('LuciBot Online and listening at prefix: ' + settingsHandler_1.prefix);
 });
 console.log('attempting to login');
-exports.client.login(settingsHandler_1.token);
-console.log('client logged in');
+exports.client.login(settingsHandler_1.token).then(function (res) {
+    console.log('client logged in');
+});

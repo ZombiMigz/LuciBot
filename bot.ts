@@ -22,5 +22,6 @@ client.on('ready', () => {
 
 
 console.log('attempting to login');
-client.login(token);
-console.log('client logged in');
+client.login(token).then(res => {
+    console.log('client logged in');
+});

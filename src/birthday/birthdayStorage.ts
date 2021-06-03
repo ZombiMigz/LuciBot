@@ -13,6 +13,3 @@ export function exportBDays() {
         console.log(`Error exporting birthday file: ${err}`);
     })
 }
-
-
-
