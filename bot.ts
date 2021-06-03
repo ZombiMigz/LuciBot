@@ -11,6 +11,7 @@ export const client: Client = new Discord.Client();
 
 client.on('ready', () => { 
 
+    console.log('initializing modules');
     initCallHandler();
     initDebugger();
 
@@ -20,5 +21,6 @@ client.on('ready', () => {
 })
 
 
-
+console.log('attempting to login');
 client.login(token);
+console.log('client logged in');

@@ -8,9 +8,12 @@ var debug_1 = require("./src/debug/debug");
 var Discord = require('discord.js');
 exports.client = new Discord.Client();
 exports.client.on('ready', function () {
+    console.log('initializing modules');
     callHandler_1.initCallHandler();
     debug_1.initDebugger();
     commandHandler_1.initCommandHandler();
     console.log('LuciBot Online and listening at prefix: ' + settingsHandler_1.prefix);
 });
+console.log('attempting to login');
 exports.client.login(settingsHandler_1.token);
+console.log('client logged in');
