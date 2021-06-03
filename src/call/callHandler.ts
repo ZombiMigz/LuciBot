@@ -1,11 +1,9 @@
 import { CategoryChannel, Guild, TextChannel, User, VoiceChannel, VoiceState } from "discord.js";
 import { client} from "../../bot";
 import { initCustomCallHandler } from "./customCallHandler";
-import { access, constants, fstat, readFileSync, writeFile, writeFileSync} from "fs";
+import { access, constants, readFileSync, writeFileSync} from "fs";
 import { createCallVoiceID, customCallNames } from "../settingsHandler";
 import "fs";
-import { Interface } from "readline";
-
 
 let tempChannels:string[];
 
