@@ -16,6 +16,7 @@ export function initCallHandler() {
 }
 
 function loadTempChannelsFile() {
+    console.log("Attempting to load tempchannels file");
     let filePath: string = 'src/call/tempChannels.json';
     access(filePath, constants.W_OK, err => {
         if (err) {
@@ -23,6 +24,7 @@ function loadTempChannelsFile() {
             console.log(`creating new file`);
             tempChannels = [];
         } else {
+            console.log("Loaded tempchannels file. Now reading tempchannels file")
             tempChannels = JSON.parse(readFileSync(filePath).toString()).tempChannels;
         }
  
@@ -56,13 +58,16 @@ function createChannel(state: VoiceState) {
     let user: User = state.member.user;
     let guild: Guild = state.guild;
     
+    console.log(`creating new temp channel`);
     guild.channels.create(
         `${user.username.toString()}'s ${generateName()}`,
          {type: 'voice'})
         .then(newChannel => {
+            console.log(`created new temp channel ${newChannel.name} successfully`);
             addTempChannel(newChannel.id);
             newChannel.setParent(category);
             state.member.voice.setChannel(newChannel);
+            console.log("temp channels successfully setup");
         })
         .catch(console.log);   
 }
@@ -73,15 +78,11 @@ export function addTempChannel(ID: string) {
 }
 
 function updateFile() {
-    try {
-        writeFile("src/call/tempChannels.json", JSON.stringify({"tempChannels": tempChannels }), err => {
-            if (err) 
-                console.log(`Failed writing to tempChannels ${tempChannels}`);
-        })
-    } catch (err) {
-        console.log(`Failed to save tempChannels file: ${err}`);
-    }
-    
+    console.log("writing to tempchannels file");
+    writeFile("src/call/tempChannels.json", JSON.stringify({"tempChannels": tempChannels }), err => {
+        if (err) 
+            console.log(`Failed writing to tempChannels ${tempChannels}`);
+    })
 }
 
 function generateName() : String {
