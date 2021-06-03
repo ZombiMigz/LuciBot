@@ -67,7 +67,10 @@ function addTempChannel(ID) {
 exports.addTempChannel = addTempChannel;
 function updateFile() {
     try {
-        fs_1.writeFileSync("src/call/tempChannels.json", JSON.stringify({ "tempChannels": tempChannels }));
+        fs_1.writeFile("src/call/tempChannels.json", JSON.stringify({ "tempChannels": tempChannels }), function (err) {
+            if (err)
+                console.log("Failed writing to tempChannels " + tempChannels);
+        });
     }
     catch (err) {
         console.log("Failed to save tempChannels file: " + err);

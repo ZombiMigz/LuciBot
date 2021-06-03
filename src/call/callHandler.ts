@@ -1,7 +1,7 @@
 import { CategoryChannel, Guild, TextChannel, User, VoiceChannel, VoiceState } from "discord.js";
 import { client} from "../../bot";
 import { initCustomCallHandler } from "./customCallHandler";
-import { access, constants, readFileSync, writeFileSync} from "fs";
+import { access, constants, readFileSync, writeFile} from "fs";
 import { createCallVoiceID, customCallNames } from "../settingsHandler";
 import "fs";
 
@@ -74,7 +74,10 @@ export function addTempChannel(ID: string) {
 
 function updateFile() {
     try {
-        writeFileSync("src/call/tempChannels.json", JSON.stringify({"tempChannels": tempChannels }))
+        writeFile("src/call/tempChannels.json", JSON.stringify({"tempChannels": tempChannels }), err => {
+            if (err) 
+                console.log(`Failed writing to tempChannels ${tempChannels}`);
+        })
     } catch (err) {
         console.log(`Failed to save tempChannels file: ${err}`);
     }
