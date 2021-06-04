@@ -22,6 +22,6 @@ client.on('ready', () => {
 
 
 console.log('attempting to login');
-client.login(token).then(res => {
-    console.log('client logged in');
-}).catch(err => `Error logging in: ${err}`);
+client.login(token)
+    .then(res => console.log('client logged in'))
+    .catch(err => console.log(`Error logging in: ${err}`));
