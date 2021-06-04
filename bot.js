@@ -17,4 +17,4 @@ exports.client.on('ready', function () {
 console.log('attempting to login');
 exports.client.login(settingsHandler_1.token).then(function (res) {
     console.log('client logged in');
-});
+}).catch(function (err) { return "Error logging in: " + err; });
