@@ -20,6 +20,9 @@ client.on('ready', () => {
     console.log('LuciBot Online and listening at prefix: ' + prefix);
 })
 
+client.options.retryLimit = 5;
+client.options.restRequestTimeout = 30000;
+
 
 console.log('attempting to login');
 client.login(token)

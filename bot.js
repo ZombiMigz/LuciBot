@@ -14,6 +14,8 @@ exports.client.on('ready', function () {
     commandHandler_1.initCommandHandler();
     console.log('LuciBot Online and listening at prefix: ' + settingsHandler_1.prefix);
 });
+exports.client.options.retryLimit = 5;
+exports.client.options.restRequestTimeout = 30000;
 console.log('attempting to login');
 exports.client.login(settingsHandler_1.token)
     .then(function (res) { return console.log('client logged in'); })
