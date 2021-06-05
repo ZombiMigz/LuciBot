@@ -5,10 +5,12 @@ var callHandler_1 = require("./src/call/callHandler");
 var settingsHandler_1 = require("./src/settingsHandler");
 var commandHandler_1 = require("./src/commands/commandHandler");
 var debug_1 = require("./src/debug/debug");
+var birthdayHandler_1 = require("./src/birthday/birthdayHandler");
 var Discord = require('discord.js');
 exports.client = new Discord.Client();
 exports.client.on('ready', function () {
     console.log('initializing modules');
+    birthdayHandler_1.initBDayHandler();
     callHandler_1.initCallHandler();
     debug_1.initDebugger();
     commandHandler_1.initCommandHandler();

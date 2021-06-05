@@ -4,6 +4,7 @@ import { initCallHandler } from "./src/call/callHandler";
 import { prefix, token } from "./src/settingsHandler";
 import { initCommandHandler } from "./src/commands/commandHandler";
 import { initDebugger } from "./src/debug/debug";
+import { initBDayHandler } from "./src/birthday/birthdayHandler";
 
 const Discord = require('discord.js');
 export const client: Client = new Discord.Client();
@@ -12,6 +13,7 @@ export const client: Client = new Discord.Client();
 client.on('ready', () => { 
 
     console.log('initializing modules');
+    initBDayHandler();
     initCallHandler();
     initDebugger();
 
