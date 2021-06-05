@@ -19,6 +19,8 @@ function importBDays() {
         console.warn("Unable to read bDay file: " + bDays);
         console.warn("making new bDay file");
         fs_1.appendFile(backupFilePath, str, function (res) { return "Backed up data to " + backupFilePath + ": \n" + res; });
+        bDays = [];
+        exportBDays();
     }
 }
 function exportBDays() {
@@ -27,8 +29,8 @@ function exportBDays() {
     });
 }
 function getBDay(id) {
-    return bDays.find(function (value) {
-        return value.id == id ? true : false;
-    });
+    return bDays.find(function (el) {
+        return el.id == id;
+    }).date;
 }
 exports.getBDay = getBDay;

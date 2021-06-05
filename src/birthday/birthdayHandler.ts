@@ -10,7 +10,10 @@ export function initBDayHandler() {
 export function bDayCommand(msg: Message) {
     let content:string[] = msg.content.split(' ');
     if (content[1] == 'get') {
-        getBDay(msg.mentions.members.first().id);
+        let data: string = getBDay(msg.mentions.members.first().id);
+        msg.channel.send(
+            `Month: ${data.substring(0,2)} Day: ${data.substring(2)}`
+        );
     } else {
         sendError(msg, "I didn't understand. To use the birthday command type "+ prefix +"birthday <get/today>")
     }

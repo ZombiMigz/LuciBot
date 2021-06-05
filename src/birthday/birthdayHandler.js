@@ -10,7 +10,8 @@ exports.initBDayHandler = initBDayHandler;
 function bDayCommand(msg) {
     var content = msg.content.split(' ');
     if (content[1] == 'get') {
-        birthdayStorage_1.getBDay(msg.mentions.members.first().id);
+        var data = birthdayStorage_1.getBDay(msg.mentions.members.first().id);
+        msg.channel.send("Month: " + data.substring(0, 2) + " Day: " + data.substring(2));
     }
     else {
         sendError(msg, "I didn't understand. To use the birthday command type " + settingsHandler_1.prefix + "birthday <get/today>");

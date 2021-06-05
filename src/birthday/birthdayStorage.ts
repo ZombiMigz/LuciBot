@@ -3,7 +3,7 @@ import { appendFile, readFileSync, writeFile } from "fs";
 
 interface bDay {
     id: string,
-    day: number;
+    date: string;
 }
 
 let bDays: bDay[];
@@ -23,6 +23,8 @@ function importBDays() {
         console.warn(`Unable to read bDay file: ${bDays}`);
         console.warn(`making new bDay file`);
         appendFile(backupFilePath, str, res => `Backed up data to ${backupFilePath}: \n${res}`);
+        bDays = [];
+        exportBDays();
     }
 }
 
@@ -32,8 +34,8 @@ function exportBDays() {
     })
 }
 
-export function getBDay(id: string) {
-    return bDays.find(value => {
-        return value.id == id? true: false;
-    })
+export function getBDay(id: string): string { 
+    return bDays.find(el => {
+        return el.id == id;
+    }).date;
 }
