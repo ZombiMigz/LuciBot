@@ -1,5 +1,4 @@
-import { User } from "discord.js";
-import { appendFile, readFileSync, writeFile } from "fs";
+import { appendFile, readFileSync, writeFile } from 'fs';
 
 interface bDay {
   id: string;
@@ -38,9 +37,11 @@ function exportBDays() {
 }
 
 export function getBDay(id: string): string {
-  return bDays.find((el) => {
+  let data = bDays.find((el) => {
     return el.id == id;
-  }).date;
+  });
+  if (data == null) return "0000";
+  return data.date;
 }
 
 export function setBDay(id: string, date: string) {

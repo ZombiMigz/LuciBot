@@ -29,9 +29,12 @@ function exportBDays() {
     });
 }
 function getBDay(id) {
-    return bDays.find(function (el) {
+    var data = bDays.find(function (el) {
         return el.id == id;
-    }).date;
+    });
+    if (data == null)
+        return "0000";
+    return data.date;
 }
 exports.getBDay = getBDay;
 function setBDay(id, date) {
