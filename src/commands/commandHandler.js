@@ -8,7 +8,7 @@ var settingsHandler_1 = require("../settingsHandler");
 var spamCommand_1 = require("./misc/spamCommand");
 var pingCall_1 = require("./pingCall/pingCall");
 function initCommandHandler() {
-    bot_1.client.on('message', function (msg) {
+    bot_1.client.on("message", function (msg) {
         if (!msg.content.startsWith(settingsHandler_1.prefix))
             return;
         if (msg.author.bot)
@@ -19,7 +19,7 @@ function initCommandHandler() {
         //any channel
         // removes prefix
         msg.content = msg.content.substring(settingsHandler_1.prefix.length);
-        var key = msg.content.split(' ')[0];
+        var key = msg.content.split(" ")[0];
         if (key == "spam")
             spamCommand_1.spam(msg);
         if (key == "pingcall" || key == "pc")

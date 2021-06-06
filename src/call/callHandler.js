@@ -10,14 +10,14 @@ var tempChannels;
 function initCallHandler() {
     loadTempChannelsFile();
     customCallHandler_1.initCustomCallHandler();
-    bot_1.client.on('voiceStateUpdate', function (fromState, state) {
+    bot_1.client.on("voiceStateUpdate", function (fromState, state) {
         handleJoin(fromState, state);
     });
 }
 exports.initCallHandler = initCallHandler;
 function loadTempChannelsFile() {
     console.log("Attempting to load tempchannels file");
-    var filePath = 'src/call/tempChannels.json';
+    var filePath = "src/call/tempChannels.json";
     fs_1.access(filePath, fs_1.constants.W_OK, function (err) {
         if (err) {
             console.log(filePath + " does not exist or is not read/writable.\n" + err);
@@ -32,12 +32,12 @@ function loadTempChannelsFile() {
 }
 // move to call handler later
 function handleJoin(fromState, state) {
-    if (state.channel != null &&
-        state.channelID == settingsHandler_1.createCallVoiceID) {
+    if (state.channel != null && state.channelID == settingsHandler_1.createCallVoiceID) {
         createChannel(state);
     }
     if (fromState.channel != undefined) {
-        if (tempChannels.includes(fromState.channelID) && fromState.channel.members.size == 0) {
+        if (tempChannels.includes(fromState.channelID) &&
+            fromState.channel.members.size == 0) {
             tempChannels.splice(tempChannels.indexOf(fromState.channelID), 1);
             updateFile();
             deleteChannel(fromState.channel);
@@ -55,7 +55,10 @@ function createChannel(state) {
     var user = state.member.user;
     var guild = state.guild;
     console.log("creating new temp channel");
-    guild.channels.create(user.username.toString() + "'s " + generateName(), { type: 'voice' })
+    guild.channels
+        .create(user.username.toString() + "'s " + generateName(), {
+        type: "voice",
+    })
         .then(function (newChannel) {
         console.log("created new temp channel " + newChannel.name + " successfully");
         addTempChannel(newChannel.id);
@@ -72,7 +75,7 @@ function addTempChannel(ID) {
 exports.addTempChannel = addTempChannel;
 function updateFile() {
     console.log("writing to tempchannels file");
-    fs_1.writeFile("src/call/tempChannels.json", JSON.stringify({ "tempChannels": tempChannels }), function (err) {
+    fs_1.writeFile("src/call/tempChannels.json", JSON.stringify({ tempChannels: tempChannels }), function (err) {
         if (err)
             console.log("Failed writing to tempChannels " + tempChannels);
     });

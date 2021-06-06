@@ -6,19 +6,20 @@ var settingsHandler_1 = require("./src/settingsHandler");
 var commandHandler_1 = require("./src/commands/commandHandler");
 var debug_1 = require("./src/debug/debug");
 var birthdayHandler_1 = require("./src/birthday/birthdayHandler");
-var Discord = require('discord.js');
+var Discord = require("discord.js");
 exports.client = new Discord.Client();
-exports.client.on('ready', function () {
-    console.log('initializing modules');
+exports.client.on("ready", function () {
+    console.log("initializing modules");
     birthdayHandler_1.initBDayHandler();
     callHandler_1.initCallHandler();
     debug_1.initDebugger();
     commandHandler_1.initCommandHandler();
-    console.log('LuciBot Online and listening at prefix: ' + settingsHandler_1.prefix);
+    console.log("LuciBot Online and listening at prefix: " + settingsHandler_1.prefix);
 });
 exports.client.options.retryLimit = 5;
 exports.client.options.restRequestTimeout = 30000;
-console.log('attempting to login');
-exports.client.login(settingsHandler_1.token)
-    .then(function (res) { return console.log('client logged in'); })
+console.log("attempting to login");
+exports.client
+    .login(settingsHandler_1.token)
+    .then(function (res) { return console.log("client logged in"); })
     .catch(function (err) { return console.log("Error logging in: " + err); });

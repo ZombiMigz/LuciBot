@@ -13,10 +13,12 @@ function initDebugger() {
 }
 exports.initDebugger = initDebugger;
 function pingListener() {
-    bot_1.client.on('message', function (msg) {
+    bot_1.client.on("message", function (msg) {
         if (msg.channel.id == debugChannel.id && msg.content.startsWith("ping")) {
             var timeSent_1 = new Date().getTime();
-            debugChannel.send("Time to register msg: " + (timeSent_1 - msg.createdAt.getTime()) + " ms").then(function (msg) {
+            debugChannel
+                .send("Time to register msg: " + (timeSent_1 - msg.createdAt.getTime()) + " ms")
+                .then(function (msg) {
                 debugChannel.send("Time to send msg: " + (msg.createdTimestamp - timeSent_1));
             });
         }
