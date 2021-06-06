@@ -56,6 +56,7 @@ export function bDayCommand(msg: Message) {
 }
 
 function convertBDay(data: string): string {
+  if (data == "0000") return "No Birthday Set";
   return `Month: ${data.substring(0, 2)} Day: ${data.substring(2)}`;
 }
 

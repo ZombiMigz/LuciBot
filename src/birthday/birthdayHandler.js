@@ -46,6 +46,8 @@ function bDayCommand(msg) {
 }
 exports.bDayCommand = bDayCommand;
 function convertBDay(data) {
+    if (data == "0000")
+        return "No Birthday Set";
     return "Month: " + data.substring(0, 2) + " Day: " + data.substring(2);
 }
 function sendError(msg, err) {
