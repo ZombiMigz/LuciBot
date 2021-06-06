@@ -21,7 +21,7 @@ function bDayCommand(msg) {
     }
     else if (content[1] == "set") {
         var date = content[2];
-        if (content[2].length < 4 ||
+        if (content[2].length < 5 ||
             Number.isNaN(date.substring(0, 2)) ||
             date[2] != "/" ||
             Number.isNaN(date.substring(3, 5))) {
