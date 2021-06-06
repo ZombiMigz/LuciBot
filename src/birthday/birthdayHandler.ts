@@ -1,7 +1,7 @@
-import { Message } from "discord.js";
+import { Message } from 'discord.js';
 
-import { prefix } from "../settingsHandler";
-import { getBDay, initBDayStorage, setBDay } from "./birthdayStorage";
+import { prefix } from '../settingsHandler';
+import { getBDay, initBDayStorage, setBDay } from './birthdayStorage';
 
 export function initBDayHandler() {
   initBDayStorage();
