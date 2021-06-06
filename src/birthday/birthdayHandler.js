@@ -10,7 +10,7 @@ exports.initBDayHandler = initBDayHandler;
 function bDayCommand(msg) {
     var content = msg.content.split(" ");
     if (content[1] == "get") {
-        if (msg.mentions.members.size < 1) {
+        if (msg.mentions.members == null || msg.mentions.members < 1) {
             sendError(msg, "I didn't understand. To get birthdays type ```" +
                 settingsHandler_1.prefix +
                 "birthday get <@user>```");

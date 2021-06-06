@@ -10,7 +10,7 @@ export function initBDayHandler() {
 export function bDayCommand(msg: Message) {
   let content: string[] = msg.content.split(" ");
   if (content[1] == "get") {
-    if (msg.mentions.members.size < 1) {
+    if (msg.mentions.members == null || msg.mentions.members < 1) {
       sendError(
         msg,
         "I didn't understand. To get birthdays type ```" +
