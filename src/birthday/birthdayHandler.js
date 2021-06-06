@@ -21,7 +21,8 @@ function bDayCommand(msg) {
     }
     else if (content[1] == "set") {
         var date = content[2];
-        if (Number.isNaN(date.substring(0, 2)) ||
+        if (content[2].length < 4 ||
+            Number.isNaN(date.substring(0, 2)) ||
             date[2] != "/" ||
             Number.isNaN(date.substring(3, 5))) {
             sendError(msg, "I didn't understand. To set birthdays type ```" +
@@ -40,7 +41,7 @@ function bDayCommand(msg) {
     else {
         sendError(msg, "I didn't understand. To use the birthday command type ```" +
             settingsHandler_1.prefix +
-            "birthday <get/today>```");
+            "birthday <get/set/today>```");
     }
 }
 exports.bDayCommand = bDayCommand;

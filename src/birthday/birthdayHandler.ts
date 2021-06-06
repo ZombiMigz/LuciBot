@@ -23,6 +23,7 @@ export function bDayCommand(msg: Message) {
   } else if (content[1] == "set") {
     let date = content[2];
     if (
+      content[2].length < 4 ||
       Number.isNaN(date.substring(0, 2)) ||
       date[2] != "/" ||
       Number.isNaN(date.substring(3, 5))
@@ -49,7 +50,7 @@ export function bDayCommand(msg: Message) {
       msg,
       "I didn't understand. To use the birthday command type ```" +
         prefix +
-        "birthday <get/today>```"
+        "birthday <get/set/today>```"
     );
   }
 }
