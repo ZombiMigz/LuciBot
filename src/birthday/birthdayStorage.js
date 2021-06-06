@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBDay = exports.initBDayStorage = void 0;
+exports.setBDay = exports.getBDay = exports.initBDayStorage = void 0;
 var fs_1 = require("fs");
 var bDays;
 var filePath = "src/birthday/birthdays.json";
@@ -10,8 +10,7 @@ function initBDayStorage() {
 }
 exports.initBDayStorage = initBDayStorage;
 function importBDays() {
-    var str = fs_1.readFileSync(filePath, { flag: 'a+' }).toString();
-    ;
+    var str = fs_1.readFileSync(filePath, { flag: "a+" }).toString();
     try {
         bDays = JSON.parse(str);
     }
@@ -25,7 +24,8 @@ function importBDays() {
 }
 function exportBDays() {
     fs_1.writeFile(filePath, JSON.stringify(bDays), function (err) {
-        console.log("Error exporting birthday file: " + err);
+        if (err)
+            console.log("Error exporting birthday file: " + err);
     });
 }
 function getBDay(id) {
@@ -34,3 +34,14 @@ function getBDay(id) {
     }).date;
 }
 exports.getBDay = getBDay;
+function setBDay(id, date) {
+    var i = bDays.findIndex(function (day) {
+        return day.id == id;
+    });
+    if (i == -1)
+        bDays.push({ id: id, date: date });
+    else
+        bDays[i] = { id: id, date: date };
+    exportBDays();
+}
+exports.setBDay = setBDay;
