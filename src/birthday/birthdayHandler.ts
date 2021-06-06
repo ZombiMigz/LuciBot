@@ -15,7 +15,7 @@ export function bDayCommand(msg: Message) {
         msg,
         "I didn't understand. To get birthdays type ```" +
           prefix +
-          "birthday get <@user>"
+          "birthday get <@user>```"
       );
     } else {
       msg.channel.send(convertBDay(getBDay(msg.mentions.members.first().id)));
@@ -31,7 +31,7 @@ export function bDayCommand(msg: Message) {
         msg,
         "I didn't understand. To set birthdays type ```" +
           prefix +
-          "birthday set mm/dd"
+          "birthday set mm/dd```"
       );
     } else if (
       Number.parseInt(date.substring(0, 2)) > 12 ||

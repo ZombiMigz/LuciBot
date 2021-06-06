@@ -13,7 +13,7 @@ function bDayCommand(msg) {
         if (msg.mentions.members.size < 1) {
             sendError(msg, "I didn't understand. To get birthdays type ```" +
                 settingsHandler_1.prefix +
-                "birthday get <@user>");
+                "birthday get <@user>```");
         }
         else {
             msg.channel.send(convertBDay(birthdayStorage_1.getBDay(msg.mentions.members.first().id)));
@@ -26,7 +26,7 @@ function bDayCommand(msg) {
             Number.isNaN(date.substring(3, 5))) {
             sendError(msg, "I didn't understand. To set birthdays type ```" +
                 settingsHandler_1.prefix +
-                "birthday set mm/dd");
+                "birthday set mm/dd```");
         }
         else if (Number.parseInt(date.substring(0, 2)) > 12 ||
             Number.parseInt(date.substring(3, 5)) > 31) {
