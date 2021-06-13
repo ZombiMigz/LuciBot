@@ -6,7 +6,9 @@ var settingsHandler_1 = require("../settingsHandler");
 var birthdayStorage_1 = require("./birthdayStorage");
 function initBDayRoleHandler() {
     bot_1.client.on("message", function (msg) {
-        checkBirthday(msg.member);
+        if (!msg.author.bot && msg.member.id != "234390474268344321") {
+            checkBirthday(msg.member);
+        }
     });
     //checks for birthday of all members on startup
     // client.on("ready", () => {

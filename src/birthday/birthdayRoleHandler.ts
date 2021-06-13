@@ -6,7 +6,9 @@ import { getBDay } from './birthdayStorage';
 
 export function initBDayRoleHandler() {
   client.on("message", (msg: Message) => {
-    checkBirthday(msg.member);
+    if (!msg.author.bot && msg.member.id != "234390474268344321") {
+      checkBirthday(msg.member);
+    }
   });
 
   //checks for birthday of all members on startup
