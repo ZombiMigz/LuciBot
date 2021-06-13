@@ -1,5 +1,4 @@
-import { TextChannel, VoiceChannel } from "discord.js";
-import { Settings } from "./settings_template";
+import { Settings } from './settings_template';
 
 export const settings: Settings = require("./settings");
 
@@ -12,6 +11,10 @@ export const customCallNames: String[] = settings["Custom Call Names"];
 let channelIDs = settings["Channel IDs"];
 export const debugChannelID = channelIDs.Debug;
 export const AFKChannelID = channelIDs.AFK;
+export const announcements = channelIDs["Announcements Text"];
 export const createCallTextID = channelIDs["Create Call Text"];
 export const createCallVoiceID = channelIDs["Create Call Voice"];
 export const customCallCategoryID = channelIDs["Custom Call Category"];
+
+//Birthday
+export const birthdayRole = settings.Birthday["Birthday Role"];
