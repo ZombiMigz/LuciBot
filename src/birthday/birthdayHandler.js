@@ -2,9 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bDayCommand = exports.initBDayHandler = void 0;
 var settingsHandler_1 = require("../settingsHandler");
+var birthdayRoleHandler_1 = require("./birthdayRoleHandler");
 var birthdayStorage_1 = require("./birthdayStorage");
 function initBDayHandler() {
     birthdayStorage_1.initBDayStorage();
+    birthdayRoleHandler_1.initBDayRoleHandler();
 }
 exports.initBDayHandler = initBDayHandler;
 function bDayCommand(msg) {

@@ -1,10 +1,12 @@
 import { Message } from 'discord.js';
 
 import { prefix } from '../settingsHandler';
+import { initBDayRoleHandler } from './birthdayRoleHandler';
 import { getBDay, initBDayStorage, setBDay } from './birthdayStorage';
 
 export function initBDayHandler() {
   initBDayStorage();
+  initBDayRoleHandler();
 }
 
 export function bDayCommand(msg: Message) {
