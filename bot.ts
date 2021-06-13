@@ -1,10 +1,10 @@
-import { Client } from "discord.js";
+import { Client } from 'discord.js';
 
-import { initCallHandler } from "./src/call/callHandler";
-import { prefix, token } from "./src/settingsHandler";
-import { initCommandHandler } from "./src/commands/commandHandler";
-import { initDebugger } from "./src/debug/debug";
-import { initBDayHandler } from "./src/birthday/birthdayHandler";
+import { initBDayHandler } from './src/birthday/birthdayHandler';
+import { initCallHandler } from './src/call/callHandler';
+import { initCommandHandler } from './src/commands/commandHandler';
+import { initDebugger } from './src/debug/debug';
+import { prefix, token } from './src/settingsHandler';
 
 const Discord = require("discord.js");
 export const client: Client = new Discord.Client();
@@ -17,6 +17,13 @@ client.on("ready", () => {
 
   initCommandHandler();
   console.log("LuciBot Online and listening at prefix: " + prefix);
+});
+
+client.on("error", (err: Error) => {
+  client.login(token);
+  console.log(
+    `LUCIBOT CRASHED AT ${new Date().getHours()}:${new Date().getMinutes()}: \n${err}`
+  );
 });
 
 client.options.retryLimit = 5;
