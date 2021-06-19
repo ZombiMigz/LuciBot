@@ -6,8 +6,14 @@ import { getBDay } from './birthdayStorage';
 
 export function initBDayRoleHandler() {
   client.on("message", (msg: Message) => {
-    if (!msg.author.bot && msg.member.id != "234390474268344321") {
-      checkBirthday(msg.member);
+    try {
+      if (!msg.author.bot && msg.member.id != "234390474268344321") {
+        checkBirthday(msg.member);
+      }
+    } catch (err) {
+      console.log(
+        `processing msg in birthday role handler:\nMessage: ${msg}\nError: ${err}`
+      );
     }
   });
 
