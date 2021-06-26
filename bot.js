@@ -16,7 +16,7 @@ exports.client.on("ready", function () {
     commandHandler_1.initCommandHandler();
     console.log("LuciBot Online and listening at prefix: " + settingsHandler_1.prefix);
 });
-exports.client.on("error", function (err) {
+process.on("unhandledRejection", function (err) {
     exports.client.login(settingsHandler_1.token);
     console.log("LUCIBOT CRASHED AT " + new Date().getHours() + ":" + new Date().getMinutes() + ": \n" + err);
 });

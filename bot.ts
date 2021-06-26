@@ -19,7 +19,7 @@ client.on("ready", () => {
   console.log("LuciBot Online and listening at prefix: " + prefix);
 });
 
-client.on("error", (err: Error) => {
+process.on("unhandledRejection", (err) => {
   client.login(token);
   console.log(
     `LUCIBOT CRASHED AT ${new Date().getHours()}:${new Date().getMinutes()}: \n${err}`
