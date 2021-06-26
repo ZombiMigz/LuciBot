@@ -1,21 +1,8 @@
-import {
-  APIMessageContentResolvable,
-  CategoryChannel,
-  Channel,
-  Client,
-  DiscordAPIError,
-  Guild,
-  Message,
-  TextChannel,
-  VoiceChannel,
-} from "discord.js";
-import { client } from "../../bot";
-import {
-  createCallTextID,
-  customCallCategoryID,
-  prefix,
-} from "../settingsHandler";
-import { addTempChannel, deleteChannel } from "./callHandler";
+import { APIMessageContentResolvable, CategoryChannel, Guild, Message, TextChannel, VoiceChannel } from 'discord.js';
+
+import { client } from '../../bot';
+import { createCallTextID, customCallCategoryID, prefix } from '../settingsHandler';
+import { addTempChannel, deleteChannel } from './callHandler';
 
 const tutorialMsg =
   "To create your own channel, type ```.create [channelname]``` Make sure to join the channel in 15 seconds or it will delete itself. Have fun!";
@@ -45,7 +32,13 @@ export function customCallMessage(msg: Message) {
         return;
       } else {
         createChannel(msg, name);
-        msg.delete();
+        try {
+          msg.delete();
+        } catch {
+          console.log(
+            `Failed to delete msg id: ${msg.id}\n with content: ${msg.content}`
+          );
+        }
       }
     } else {
       sendError(msg, misunderstoodError + " " + tutorialMsg);

@@ -30,7 +30,12 @@ function customCallMessage(msg) {
             }
             else {
                 createChannel(msg, name_1);
-                msg.delete();
+                try {
+                    msg.delete();
+                }
+                catch (_a) {
+                    console.log("Failed to delete msg id: " + msg.id + "\n with content: " + msg.content);
+                }
             }
         }
         else {
