@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/uws": "^10.149.0",
+    "@types/cors": "^2.8.12",
+    "cors": "^2.8.5",
     "discord.js": "^12.5.3",
     "express": "^4.17.1"
   },
