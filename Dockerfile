@@ -8,5 +8,8 @@ COPY package*.json ./
 RUN npm install
 #copies files
 COPY . .
+#installs nano
+RUN apt-get update
+RUN apt-get -y install vim nano
 #runs bot
 CMD ["node", "."]

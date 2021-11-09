@@ -22,9 +22,7 @@ client.on("ready", () => {
 
 process.on("unhandledRejection", (err) => {
   client.login(token);
-  console.log(
-    `LUCIBOT CRASHED AT ${new Date().getHours()}:${new Date().getMinutes()}: \n${err}`
-  );
+  console.log(`LUCIBOT CRASHED AT ${new Date().getHours()}:${new Date().getMinutes()}: \n${err}`);
 });
 
 client.options.retryLimit = 5;
@@ -35,4 +33,7 @@ client
   .login(token)
   .then((res) => console.log("client logged in"))
   .then(() => initWebEndpoint())
-  .catch((err) => console.log(`Error logging in: ${err}`));
+  .catch((err) => {
+    console.log(`Error logging in: ${err}`);
+    setTimeout("Error timeout, bot will now shut off", 300000);
+  });

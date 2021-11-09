@@ -28,4 +28,7 @@ exports.client
     .login(settingsHandler_1.token)
     .then(function (res) { return console.log("client logged in"); })
     .then(function () { return webEndpoint_1.initWebEndpoint(); })
-    .catch(function (err) { return console.log("Error logging in: " + err); });
+    .catch(function (err) {
+    console.log("Error logging in: " + err);
+    setTimeout("Error timeout, bot will now shut off", 300000);
+});
