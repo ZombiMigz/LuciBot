@@ -4,7 +4,7 @@
   "description": "Custom Discord bot for Bronze V Discord Server.",
   "main": "bot.js",
   "scripts": {
-    "start": "npx nodemon bot.ts"
+    "start": "npx nodemon bot.ts --ignore src/call/tempChannels.json"
   },
   "author": "Luciano Lim",
   "license": "ISC",
