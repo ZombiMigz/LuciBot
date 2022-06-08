@@ -1,11 +1,11 @@
-import { Client } from 'discord.js';
+import { Client } from "discord.js";
 
-import { initBDayHandler } from './src/birthday/birthdayHandler';
-import { initCallHandler } from './src/call/callHandler';
-import { initCommandHandler } from './src/commands/commandHandler';
-import { initDebugger } from './src/debug/debug';
-import { prefix, token } from './src/settingsHandler';
-import { initWebEndpoint } from './src/web/webEndpoint';
+import { initBDayHandler } from "./src/birthday/birthdayHandler";
+import { initCallHandler } from "./src/call/callHandler";
+import { initCommandHandler } from "./src/commands/commandHandler";
+import { initDebugger } from "./src/debug/debug";
+import { prefix, token } from "./src/settingsHandler";
+import { initWebEndpoint } from "./src/web/webEndpoint";
 
 const Discord = require("discord.js");
 export const client: Client = new Discord.Client();
@@ -32,7 +32,7 @@ console.log("attempting to login");
 client
   .login(token)
   .then((res) => console.log("client logged in"))
-  .then(() => initWebEndpoint())
+  // .then(() => initWebEndpoint())
   .catch((err) => {
     console.log(`Error logging in: ${err}`);
     setTimeout("Error timeout, bot will now shut off", 300000);
