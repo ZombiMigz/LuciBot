@@ -1,14 +1,18 @@
-import { Client } from "discord.js";
+import { Client, Intents } from "discord.js";
 
-import { initBDayHandler } from "./src/birthday/birthdayHandler";
-import { initCallHandler } from "./src/call/callHandler";
+import { initBDayHandler } from "./src/modules/birthday/birthdayHandler";
 import { initCommandHandler } from "./src/commands/commandHandler";
 import { initDebugger } from "./src/debug/debug";
-import { prefix, token } from "./src/settingsHandler";
-import { initWebEndpoint } from "./src/web/webEndpoint";
+import { settings } from "./src/settingsHandler";
+import { initCallHandler } from "./src/modules/call/callHandler";
 
 const Discord = require("discord.js");
-export const client: Client = new Discord.Client();
+// let flags = Intents.FLAGS;
+// let intents = new Intents();
+// intents.add(flags.GUILDS, flags.GUILD_VOICE_STATES, flags.GUILD_MESSAGES, flags.GUILD_MESSAGE_TYPING, flags.message);
+export const client: Client = new Discord.Client({ intents: new Intents(32767) });
+
+let { prefix, token } = settings;
 
 client.on("ready", () => {
   console.log("initializing modules");
@@ -32,7 +36,6 @@ console.log("attempting to login");
 client
   .login(token)
   .then((res) => console.log("client logged in"))
-  // .then(() => initWebEndpoint())
   .catch((err) => {
     console.log(`Error logging in: ${err}`);
     setTimeout("Error timeout, bot will now shut off", 300000);

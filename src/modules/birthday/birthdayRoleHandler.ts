@@ -1,8 +1,9 @@
-import { GuildMember, Message, TextChannel } from 'discord.js';
+import { GuildMember, Message, TextChannel } from "discord.js";
 
-import { client } from '../../bot';
-import { announcements, birthdayRole } from '../settingsHandler';
-import { getBDay } from './birthdayStorage';
+import { client } from "../../../bot";
+import { settings } from "../../settingsHandler";
+
+import { getBDay } from "./birthdayStorage";
 
 export function initBDayRoleHandler() {
   client.on("message", (msg: Message) => {
@@ -11,9 +12,7 @@ export function initBDayRoleHandler() {
         checkBirthday(msg.member);
       }
     } catch (err) {
-      console.log(
-        `processing msg in birthday role handler:\nMessage: ${msg}\nError: ${err}`
-      );
+      console.log(`processing msg in birthday role handler:\nMessage: ${msg}\nError: ${err}`);
     }
   });
 
@@ -28,9 +27,12 @@ export function initBDayRoleHandler() {
 }
 
 function checkBirthday(member: GuildMember) {
-  if (member.roles.cache.some((role) => role.id == birthdayRole)) {
+  let birthdayRoleID = settings.birthdayModule.roleID;
+  let { announcements } = settings.channelIDs;
+
+  if (member.roles.cache.some((role) => role.id == birthdayRoleID)) {
     if (!isToday(getBDay(member.id))) {
-      member.roles.remove(birthdayRole);
+      member.roles.remove(birthdayRoleID);
     }
   } else {
     if (isToday(getBDay(member.id))) {
@@ -38,15 +40,12 @@ function checkBirthday(member: GuildMember) {
         `EVERYONE WISH A HAPPY BIRTHDAY TO <@${member.id}>`
       );
 
-      member.roles.add(birthdayRole);
+      member.roles.add(birthdayRoleID);
     }
   }
 }
 
 function isToday(date: string): boolean {
   let now: Date = new Date();
-  return (
-    now.getMonth() + 1 == parseInt(date.substring(0, 2)) &&
-    now.getDate() == parseInt(date.substring(2, 4))
-  );
+  return now.getMonth() + 1 == parseInt(date.substring(0, 2)) && now.getDate() == parseInt(date.substring(2, 4));
 }

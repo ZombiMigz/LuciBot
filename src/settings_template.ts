@@ -1,33 +1,41 @@
-export interface Settings {
-  "Channel IDs": {
-    "Create Call Voice": string;
-    "Create Call Text": string;
-    "Custom Call Category": string;
-    "Announcements Text": string;
+export type Settings = {
+  customCallsModule: {
+    enabled: boolean;
+    voiceCreateID: string;
+    textCreateID: string;
+    category: string;
+    names: string[];
+  };
+  channelIDs: {
+    announcements: string;
     AFK: string;
-    Debug: string;
+    debug: string;
   };
-  Birthday: {
-    "Birthday Role": string;
+  birthdayModule: {
+    enabled: boolean;
+    roleID: string;
   };
-  "Custom Call Names": string[];
-  Token: string;
-  Prefix: string;
-}
+  token: string;
+  prefix: string;
+};
 
-export let emptySettings = {
-  "Channel IDs": {
-    "Create Call Voice": "0",
-    "Create Call Text": "0",
-    "Custom Call Category": "0",
-    AFK: "0",
-    Debug: "0",
-    "Announcements Text": "0",
+export let defaultSettings: Settings = {
+  customCallsModule: {
+    enabled: false,
+    voiceCreateID: "",
+    textCreateID: "",
+    category: "",
+    names: ["Call"],
   },
-  "Custom Call Names": ["Call"],
-  Birthday: {
-    "Birthday Role": "0",
+  channelIDs: {
+    announcements: "",
+    AFK: "",
+    debug: "",
   },
-  Token: "0",
-  Prefix: ".",
+  birthdayModule: {
+    enabled: false,
+    roleID: "",
+  },
+  token: "",
+  prefix: ".",
 };

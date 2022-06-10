@@ -1,10 +1,8 @@
 import { Message } from "discord.js";
-import { prefix } from "../../settingsHandler";
+import { settings } from "../../settingsHandler";
 
 let misunderstood: string =
-  "Sorry I didn't understand. To use the spam command type ```" +
-  prefix +
-  "spam <1-5> <@user> <message>```";
+  "Sorry I didn't understand. To use the spam command type ```" + settings.prefix + "spam <1-5> <@user> <message>```";
 export function spam(msg: Message) {
   msg.content = msg.content.substring(5);
   let content: string[] = msg.content.split(" ");

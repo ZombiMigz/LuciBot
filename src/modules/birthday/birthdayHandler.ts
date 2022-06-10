@@ -1,10 +1,13 @@
-import { Message } from 'discord.js';
+import { Message } from "discord.js";
 
-import { prefix } from '../settingsHandler';
-import { initBDayRoleHandler } from './birthdayRoleHandler';
-import { getBDay, initBDayStorage, setBDay } from './birthdayStorage';
+import { settings } from "../../settingsHandler";
+let { prefix } = settings;
+
+import { initBDayRoleHandler } from "./birthdayRoleHandler";
+import { getBDay, initBDayStorage, setBDay } from "./birthdayStorage";
 
 export function initBDayHandler() {
+  if (!settings.birthdayModule.enabled) return;
   initBDayStorage();
   initBDayRoleHandler();
 }
@@ -13,12 +16,7 @@ export function bDayCommand(msg: Message) {
   let content: string[] = msg.content.split(" ");
   if (content[1] == "get") {
     if (msg.mentions.members == null || msg.mentions.members.size < 1) {
-      sendError(
-        msg,
-        "I didn't understand. To get birthdays type ```" +
-          prefix +
-          "birthday get <@user>```"
-      );
+      sendError(msg, "I didn't understand. To get birthdays type ```" + prefix + "birthday get <@user>```");
     } else {
       msg.channel.send(convertBDay(getBDay(msg.mentions.members.first().id)));
     }
@@ -30,29 +28,17 @@ export function bDayCommand(msg: Message) {
       date[2] != "/" ||
       Number.isNaN(date.substring(3, 5))
     ) {
-      sendError(
-        msg,
-        "I didn't understand. To set birthdays type ```" +
-          prefix +
-          "birthday set mm/dd```"
-      );
-    } else if (
-      Number.parseInt(date.substring(0, 2)) > 12 ||
-      Number.parseInt(date.substring(3, 5)) > 31
-    ) {
+      sendError(msg, "I didn't understand. To set birthdays type ```" + prefix + "birthday set mm/dd```");
+    } else if (Number.parseInt(date.substring(0, 2)) > 12 || Number.parseInt(date.substring(3, 5)) > 31) {
       sendError(msg, "Invalid date");
     } else {
       setBDay(msg.member.id, date.substring(0, 2) + date.substring(3, 5));
-      msg.channel.send(
-        `Birthday set to: ${convertBDay(getBDay(msg.member.id))}`
-      );
+      msg.channel.send(`Birthday set to: ${convertBDay(getBDay(msg.member.id))}`);
     }
   } else {
     sendError(
       msg,
-      "I didn't understand. To use the birthday command type ```" +
-        prefix +
-        "birthday <get/set/today>```"
+      "I didn't understand. To use the birthday command type ```" + prefix + "birthday <get/set/today>```"
     );
   }
 }
