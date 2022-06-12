@@ -1,4 +1,4 @@
-import { appendFile, readFileSync, writeFile } from 'fs';
+import { appendFile, readFileSync, writeFile } from "fs";
 
 interface bDay {
   id: string;
@@ -6,8 +6,8 @@ interface bDay {
 }
 
 let bDays: bDay[];
-let filePath = "src/birthday/birthdays.json";
-let backupFilePath = "src/birthday/backup.json";
+let filePath = "src/modules/birthday/birthdays.json";
+let backupFilePath = "src/modules/birthday/backup.json";
 
 export function initBDayStorage() {
   importBDays();
@@ -20,11 +20,7 @@ function importBDays() {
   } catch (err) {
     console.warn(`Unable to read bDay file: ${bDays}`);
     console.warn(`making new bDay file`);
-    appendFile(
-      backupFilePath,
-      str,
-      (res) => `Backed up data to ${backupFilePath}: \n${res}`
-    );
+    appendFile(backupFilePath, str, (res) => `Backed up data to ${backupFilePath}: \n${res}`);
     bDays = [];
     exportBDays();
   }
