@@ -11,6 +11,7 @@ import { client } from "../../../bot";
 let tempChannels: string[];
 
 export function initCallHandler() {
+  // if (!settings.customCallsModule.enabled) return;
   loadTempChannelsFile();
   initCustomCallHandler();
   client.on("voiceStateUpdate", (fromState: VoiceState, state: VoiceState) => {

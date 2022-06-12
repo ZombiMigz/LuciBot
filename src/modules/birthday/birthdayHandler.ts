@@ -7,7 +7,7 @@ import { initBDayRoleHandler } from "./birthdayRoleHandler";
 import { getBDay, initBDayStorage, setBDay } from "./birthdayStorage";
 
 export function initBDayHandler() {
-  if (!settings.birthdayModule.enabled) return;
+  // if (!settings.birthdayModule.enabled) return;
   initBDayStorage();
   initBDayRoleHandler();
 }
