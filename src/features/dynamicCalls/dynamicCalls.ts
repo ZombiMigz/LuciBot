@@ -9,7 +9,7 @@ const trackedCallIds: Set<String> = new Set();
 async function createCall(member: GuildMember) {
   const newChannel = (await member.guild.channels.create({
     type: ChannelType.GuildVoice,
-    name: `${member.nickname}'s call`,
+    name: `${member.nickname ?? member.user.username}'s call`,
     parent: ENV.dynamicCallCategoryId,
   })) as VoiceBasedChannel;
   trackedCallIds.add(newChannel.id);
