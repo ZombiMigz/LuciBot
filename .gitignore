@@ -1,6 +1,2 @@
-node_modules/
-settings.json
-tempChannels.json
-src/call/tempChannels.json
-src/birthday/backup.json
-src/birthday/birthdays.json
+node_modules
+.env
