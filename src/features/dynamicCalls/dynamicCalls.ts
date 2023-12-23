@@ -13,10 +13,13 @@ async function createCall(member: GuildMember) {
     parent: ENV.dynamicCallCategoryId,
   })) as VoiceBasedChannel;
   trackedCallIds.add(newChannel.id);
-  member.voice.setChannel(newChannel);
+  if (member.voice.channel != null) {
+    member.voice.setChannel(newChannel);
+  }
+  deleteCallIfEmpty(newChannel);
 }
 
-async function deleteCall(channel: VoiceBasedChannel) {
+async function deleteCallIfEmpty(channel: VoiceBasedChannel) {
   trackedCallIds.delete(channel.id);
   await new Promise((res) => {
     setTimeout(() => res(null), CHANNEL_LEAVE_DELETE_DELAY_MS);
@@ -31,7 +34,7 @@ function init(client: Client) {
     }
     if (oldState.channel != null) {
       if (trackedCallIds.has(oldState.channelId ?? "") && oldState.channel?.members.size === 0) {
-        deleteCall(oldState.channel);
+        deleteCallIfEmpty(oldState.channel);
       }
     }
   });

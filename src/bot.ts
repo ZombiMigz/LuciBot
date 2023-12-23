@@ -6,6 +6,10 @@ const client = new Client({ intents: [GatewayIntentBits.GuildVoiceStates] });
 
 client.on("ready", () => console.log("Bot Started"));
 
+client.on("error", (err) => {
+  console.log(err);
+});
+
 const features: Feature[] = [DynamicCallsModule];
 
 features.forEach((feature) => feature.init(client));
