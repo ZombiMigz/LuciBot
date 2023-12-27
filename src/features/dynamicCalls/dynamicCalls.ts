@@ -13,9 +13,9 @@ async function createCall(member: GuildMember) {
     parent: ENV.dynamicCallCategoryId,
   })) as VoiceBasedChannel;
   trackedCallIds.add(newChannel.id);
-  if (member.voice.channel != null) {
-    member.voice.setChannel(newChannel);
-  }
+  member.voice.setChannel(newChannel).catch((err) => {
+    console.log(`Unable to set voice channel for ${member.user.displayName}" ${err}`);
+  });
   deleteCallIfEmpty(newChannel);
 }
 
