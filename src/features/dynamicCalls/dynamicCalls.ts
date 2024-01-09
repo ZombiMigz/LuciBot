@@ -20,11 +20,13 @@ async function createCall(member: GuildMember) {
 }
 
 async function deleteCallIfEmpty(channel: VoiceBasedChannel) {
-  trackedCallIds.delete(channel.id);
   await new Promise((res) => {
     setTimeout(() => res(null), CHANNEL_LEAVE_DELETE_DELAY_MS);
   });
-  if (channel.members.size === 0) channel.delete();
+  if (channel.members.size === 0) {
+    trackedCallIds.delete(channel.id);
+    channel.delete();
+  }
 }
 
 function init(client: Client) {
