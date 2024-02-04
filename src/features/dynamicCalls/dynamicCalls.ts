@@ -25,7 +25,9 @@ async function deleteCallIfEmpty(channel: VoiceBasedChannel) {
   });
   if (channel.members.size === 0) {
     trackedCallIds.delete(channel.id);
-    channel.delete();
+    channel.delete().catch((err) => {
+      console.log(`Unable to delete voice channel with id ${channel.id}" ${err}`);
+    });
   }
 }
 
