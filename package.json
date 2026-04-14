@@ -4,18 +4,31 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./src/bot.ts"
+    "start": "nodemon ./src/bot.ts",
+    "lint": "eslint src/**/*.ts tests/**/*.ts",
+    "format": "prettier --write src/**/*.ts tests/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts tests/**/*.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^14.14.1",
-    "dotenv": "^16.3.1",
+    "discord.js": "^14.26.2",
+    "dotenv": "^17.4.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^6.0.2",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.0",
+    "eslint-config-prettier": "^10.1.8",
+    "jiti": "^2.6.1",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.8.2",
+    "typescript-eslint": "^8.58.2",
+    "vitest": "^4.1.4"
   }
 }

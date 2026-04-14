@@ -1,17 +1,15 @@
 import { Client, GatewayIntentBits } from "discord.js";
-import { Feature } from "./features/Feature";
-import { DynamicCallsModule } from "./features/dynamicCalls/dynamicCalls";
-import { ENV } from "./env";
+import { getEnv } from "@/src/env";
+import { createDynamicCallsServiceFromEnv } from "@/src/services/dynamicCalls/dynamicCallsService";
+
+const env = getEnv();
 const client = new Client({ intents: [GatewayIntentBits.GuildVoiceStates] });
+const dynamicCallsService = createDynamicCallsServiceFromEnv();
 
 client.on("ready", () => console.log("Bot Started"));
-
-client.on("error", (err) => {
-  console.log(err);
+client.on("error", (err) => console.log(err));
+client.on("voiceStateUpdate", (oldState, newState) => {
+  dynamicCallsService.handleVoiceStateUpdate(oldState, newState);
 });
 
-const features: Feature[] = [DynamicCallsModule];
-
-features.forEach((feature) => feature.init(client));
-
-client.login(ENV.token);
+client.login(env.token);
