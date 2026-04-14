@@ -1,0 +1,34 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches: [main]
+
+env:
+  REGISTRY_URL: us-west2-docker.pkg.dev/lucibot-493305/lucibot
+
+jobs:
+  build-and-push:
+    name: Build and Push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/707541527522/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: github-actions-lucibot@lucibot-493305.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker us-west2-docker.pkg.dev
+
+      - name: Build and push
+        run: |
+          docker build -t ${{ env.REGISTRY_URL }}/lucibot:latest .
+          docker push ${{ env.REGISTRY_URL }}/lucibot:latest

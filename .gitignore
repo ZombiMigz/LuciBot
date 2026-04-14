@@ -1,2 +1,11 @@
 node_modules
+dist/
 .env
+
+# CDKTF / Terraform
+cdktf.out/
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+crash.log

@@ -9,7 +9,8 @@
     "format": "prettier --write src/**/*.ts tests/**/*.ts",
     "format:check": "prettier --check src/**/*.ts tests/**/*.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build": "esbuild src/bot.ts --bundle --platform=node --target=node25 --minify --outfile=dist/bot.js --external:bufferutil --external:utf-8-validate --external:@discordjs/opus --external:sodium --external:libsodium-wrappers --external:zlib-sync --external:erlpack"
   },
   "keywords": [],
   "author": "",
@@ -18,11 +19,13 @@
     "discord.js": "^14.26.2",
     "dotenv": "^17.4.2",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^6.0.2",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "esbuild": "^0.28.0",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
     "jiti": "^2.6.1",
