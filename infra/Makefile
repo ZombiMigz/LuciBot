@@ -2,7 +2,7 @@
 
 setup:
 	npm ci
-	npx cdktf get
+	npm exec cdktf -- get
 
 lint:
 	npm run lint
@@ -17,4 +17,4 @@ test:
 	npm run test
 
 deploy:
-	npx cdktf deploy --auto-approve
+	npm exec cdktf -- deploy --auto-approve
