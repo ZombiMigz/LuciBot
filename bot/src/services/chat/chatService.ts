@@ -1,7 +1,8 @@
 import { Client } from "discord.js";
 
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MODEL = "llama-3.3-70b-versatile";
+const GEMINI_API_URL =
+  "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+const MODEL = "gemini-2.0-flash";
 const MAX_HISTORY_MESSAGES = 100; // 50 exchanges — well within 128k context window
 
 const SYSTEM_PROMPT = `\
@@ -35,7 +36,7 @@ export function createChatService(client: Client, apiKey: string): ChatService {
         history.splice(0, history.length - MAX_HISTORY_MESSAGES);
       }
 
-      const response = await fetch(GROQ_API_URL, {
+      const response = await fetch(GEMINI_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

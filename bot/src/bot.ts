@@ -17,7 +17,7 @@ async function main() {
   });
 
   const messageService = createMessageService(client);
-  createChatService(client, env.groqToken);
+  createChatService(client, env.geminiToken);
   const dynamicCallsService = createDynamicCallsServiceFromEnv();
 
   client.on("ready", async () => {

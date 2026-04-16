@@ -98,8 +98,8 @@ export class LuciBotStack extends TerraformStack {
       replication: { auto: {} },
     });
 
-    const groqTokenSecret = new SecretManagerSecret(this, "groq-token-secret", {
-      secretId: "GROQ_TOKEN",
+    const geminiTokenSecret = new SecretManagerSecret(this, "gemini-token-secret", {
+      secretId: "GEMINI_TOKEN",
       replication: { auto: {} },
     });
 
@@ -121,8 +121,8 @@ export class LuciBotStack extends TerraformStack {
       member: `serviceAccount:${vmSa.email}`,
     });
 
-    new SecretManagerSecretIamMember(this, "vm-sa-groq-token-secret", {
-      secretId: groqTokenSecret.secretId,
+    new SecretManagerSecretIamMember(this, "vm-sa-gemini-token-secret", {
+      secretId: geminiTokenSecret.secretId,
       role: "roles/secretmanager.secretAccessor",
       member: `serviceAccount:${vmSa.email}`,
     });
