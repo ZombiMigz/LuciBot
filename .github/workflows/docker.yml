@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 env:
-  REGISTRY_URL: us-west2-docker.pkg.dev/lucibot-493305/lucibot
+  REGISTRY_URL: us-west1-docker.pkg.dev/lucibot-493305/lucibot
 
 jobs:
   build-and-push:
@@ -27,7 +27,7 @@ jobs:
 
       - uses: docker/login-action@v3
         with:
-          registry: us-west2-docker.pkg.dev
+          registry: us-west1-docker.pkg.dev
           username: oauth2accesstoken
           password: ${{ steps.auth.outputs.access_token }}
 

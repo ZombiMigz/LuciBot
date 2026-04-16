@@ -7,7 +7,8 @@ import { IamWorkloadIdentityPool } from "@cdktf/provider-google/lib/iam-workload
 import { IamWorkloadIdentityPoolProvider } from "@cdktf/provider-google/lib/iam-workload-identity-pool-provider";
 import { ServiceAccount } from "@cdktf/provider-google/lib/service-account";
 import { ServiceAccountIamMember } from "@cdktf/provider-google/lib/service-account-iam-member";
-import { GITHUB_REPO, PROJECT, REGION } from "./constants";
+import { ComputeInstance } from "@cdktf/provider-google/lib/compute-instance";
+import { COMPUTE_ZONE, GITHUB_REPO, PROJECT, REGION, REGISTRY_URL } from "./constants";
 
 export class LuciBotStack extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -82,6 +83,53 @@ export class LuciBotStack extends TerraformStack {
       location: REGION,
       role: "roles/artifactregistry.writer",
       member: `serviceAccount:${sa.email}`,
+    });
+
+    // Service account for the VM to pull images from the registry
+    const vmSa = new ServiceAccount(this, "vm-sa", {
+      accountId: "lucibot-vm",
+      displayName: "LuciBot VM",
+    });
+
+    new ArtifactRegistryRepositoryIamMember(this, "vm-sa-registry-reader", {
+      repository: registry.name,
+      location: REGION,
+      role: "roles/artifactregistry.reader",
+      member: `serviceAccount:${vmSa.email}`,
+    });
+
+    // e2-micro VM on Container-Optimized OS — qualifies for always-free tier
+    new ComputeInstance(this, "bot-vm", {
+      name: "lucibot",
+      machineType: "e2-micro",
+      zone: COMPUTE_ZONE,
+      bootDisk: {
+        initializeParams: {
+          image: "cos-cloud/cos-stable",
+        },
+      },
+      networkInterface: [
+        {
+          network: "default",
+          accessConfig: [{}], // ephemeral external IP
+        },
+      ],
+      metadata: {
+        "gce-container-declaration": [
+          "spec:",
+          "  containers:",
+          "  - name: lucibot",
+          `    image: ${REGISTRY_URL}/lucibot:latest`,
+          "    stdin: false",
+          "    tty: false",
+          "  restartPolicy: Always",
+        ].join("\n"),
+      },
+      serviceAccount: {
+        email: vmSa.email,
+        scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+      },
+      allowStoppingForUpdate: true,
     });
   }
 }
