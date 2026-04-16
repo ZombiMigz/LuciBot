@@ -31,12 +31,16 @@ function makeChannel(id: string, memberCount = 0): FakeChannel {
   };
 }
 
-function makeMember(opts: { nickname?: string; username?: string; channel?: FakeChannel } = {}): FakeMember {
+function makeMember(
+  opts: { nickname?: string; username?: string; channel?: FakeChannel } = {}
+): FakeMember {
   return {
     nickname: opts.nickname ?? null,
     user: { username: opts.username ?? "testuser", displayName: "TestUser" },
     guild: {
-      channels: { create: vi.fn().mockResolvedValue(opts.channel ?? makeChannel("new-channel-id")) },
+      channels: {
+        create: vi.fn().mockResolvedValue(opts.channel ?? makeChannel("new-channel-id")),
+      },
     },
     voice: { setChannel: vi.fn().mockResolvedValue(undefined) },
   };
@@ -65,7 +69,10 @@ describe("DynamicCallsService", () => {
   describe("when a member joins the create channel", () => {
     it("creates a new voice channel named after the member's username", async () => {
       const member = makeMember({ username: "luciano" });
-      service.handleVoiceStateUpdate(fakeVoiceState(null), fakeVoiceState(CREATE_CHANNEL_ID, null, member));
+      service.handleVoiceStateUpdate(
+        fakeVoiceState(null),
+        fakeVoiceState(CREATE_CHANNEL_ID, null, member)
+      );
       await vi.runAllTimersAsync();
       expect(member.guild.channels.create).toHaveBeenCalledWith(
         expect.objectContaining({ name: "luciano's call" })
@@ -74,7 +81,10 @@ describe("DynamicCallsService", () => {
 
     it("uses nickname over username when available", async () => {
       const member = makeMember({ nickname: "LuciBot", username: "luciano" });
-      service.handleVoiceStateUpdate(fakeVoiceState(null), fakeVoiceState(CREATE_CHANNEL_ID, null, member));
+      service.handleVoiceStateUpdate(
+        fakeVoiceState(null),
+        fakeVoiceState(CREATE_CHANNEL_ID, null, member)
+      );
       await vi.runAllTimersAsync();
       expect(member.guild.channels.create).toHaveBeenCalledWith(
         expect.objectContaining({ name: "LuciBot's call" })
@@ -84,7 +94,10 @@ describe("DynamicCallsService", () => {
     it("moves the member into the newly created channel", async () => {
       const newChannel = makeChannel("new-channel-id");
       const member = makeMember({ channel: newChannel });
-      service.handleVoiceStateUpdate(fakeVoiceState(null), fakeVoiceState(CREATE_CHANNEL_ID, null, member));
+      service.handleVoiceStateUpdate(
+        fakeVoiceState(null),
+        fakeVoiceState(CREATE_CHANNEL_ID, null, member)
+      );
       await vi.runAllTimersAsync();
       expect(member.voice.setChannel).toHaveBeenCalledWith(newChannel);
     });
@@ -95,10 +108,16 @@ describe("DynamicCallsService", () => {
       const newChannel = makeChannel("tracked-channel-id", 0);
       const member = makeMember({ channel: newChannel });
 
-      service.handleVoiceStateUpdate(fakeVoiceState(null), fakeVoiceState(CREATE_CHANNEL_ID, null, member));
+      service.handleVoiceStateUpdate(
+        fakeVoiceState(null),
+        fakeVoiceState(CREATE_CHANNEL_ID, null, member)
+      );
       await vi.runAllTimersAsync();
 
-      service.handleVoiceStateUpdate(fakeVoiceState("tracked-channel-id", newChannel), fakeVoiceState(null));
+      service.handleVoiceStateUpdate(
+        fakeVoiceState("tracked-channel-id", newChannel),
+        fakeVoiceState(null)
+      );
       await vi.runAllTimersAsync();
 
       expect(newChannel.delete).toHaveBeenCalled();
@@ -108,10 +127,16 @@ describe("DynamicCallsService", () => {
       const newChannel = makeChannel("tracked-channel-id", 1);
       const member = makeMember({ channel: newChannel });
 
-      service.handleVoiceStateUpdate(fakeVoiceState(null), fakeVoiceState(CREATE_CHANNEL_ID, null, member));
+      service.handleVoiceStateUpdate(
+        fakeVoiceState(null),
+        fakeVoiceState(CREATE_CHANNEL_ID, null, member)
+      );
       await vi.runAllTimersAsync();
 
-      service.handleVoiceStateUpdate(fakeVoiceState("tracked-channel-id", newChannel), fakeVoiceState(null));
+      service.handleVoiceStateUpdate(
+        fakeVoiceState("tracked-channel-id", newChannel),
+        fakeVoiceState(null)
+      );
       await vi.runAllTimersAsync();
 
       expect(newChannel.delete).not.toHaveBeenCalled();
@@ -119,7 +144,10 @@ describe("DynamicCallsService", () => {
 
     it("does not delete untracked channels", async () => {
       const untrackedChannel = makeChannel("untracked-channel-id", 0);
-      service.handleVoiceStateUpdate(fakeVoiceState("untracked-channel-id", untrackedChannel), fakeVoiceState(null));
+      service.handleVoiceStateUpdate(
+        fakeVoiceState("untracked-channel-id", untrackedChannel),
+        fakeVoiceState(null)
+      );
       await vi.runAllTimersAsync();
       expect(untrackedChannel.delete).not.toHaveBeenCalled();
     });
@@ -128,7 +156,10 @@ describe("DynamicCallsService", () => {
   describe("when a member joins a non-create channel", () => {
     it("does not create a call", async () => {
       const member = makeMember();
-      service.handleVoiceStateUpdate(fakeVoiceState(null), fakeVoiceState("some-other-channel-id", null, member));
+      service.handleVoiceStateUpdate(
+        fakeVoiceState(null),
+        fakeVoiceState("some-other-channel-id", null, member)
+      );
       await vi.runAllTimersAsync();
       expect(member.guild.channels.create).not.toHaveBeenCalled();
     });
