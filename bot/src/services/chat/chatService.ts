@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 const MODEL = "gemma-3-27b-it";
 const MAX_HISTORY_MESSAGES = 100; // 50 exchanges — well within 128k context window
 
@@ -12,13 +12,15 @@ Keep responses concise and punchy — this is Discord, not an essay. \
 You can roast people lightly when the vibe calls for it.\
 `;
 
-type Message = { role: "user" | "assistant" | "system"; content: string };
+type Message = { role: "user" | "model"; content: string };
 
 export interface ChatService {
   respond(channelId: string, content: string): Promise<string>;
 }
 
 export function createChatService(client: Client, apiKey: string): ChatService {
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: MODEL, systemInstruction: SYSTEM_PROMPT });
   const histories = new Map<string, Message[]>();
 
   function getHistory(channelId: string): Message[] {
@@ -29,45 +31,21 @@ export function createChatService(client: Client, apiKey: string): ChatService {
   const service: ChatService = {
     async respond(channelId: string, content: string): Promise<string> {
       const history = getHistory(channelId);
+
+      const chat = model.startChat({
+        history: history.map((m) => ({ role: m.role, parts: [{ text: m.content }] })),
+      });
+
+      const result = await chat.sendMessage(content);
+      const reply = result.response.text();
+
       history.push({ role: "user", content });
+      history.push({ role: "model", content: reply });
 
       if (history.length > MAX_HISTORY_MESSAGES) {
         history.splice(0, history.length - MAX_HISTORY_MESSAGES);
       }
 
-      const response = await fetch(GEMINI_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: MODEL,
-          messages: [{ role: "system", content: SYSTEM_PROMPT }, ...history],
-        }),
-      });
-
-      if (response.status === 429) {
-        history.pop();
-        const retryAfter = parseInt(response.headers.get("retry-after") ?? "0");
-        if (retryAfter > 0) {
-          const wait =
-            retryAfter < 60 ? `${retryAfter} seconds` : `${Math.ceil(retryAfter / 60)} minutes`;
-          return `I've run out of free tokens. Try again in ~${wait}.`;
-        }
-        return "I've run out of free tokens. Please try again later.";
-      }
-
-      if (!response.ok) {
-        history.pop();
-        throw new Error(`Gemini API error: ${response.status}`);
-      }
-
-      const data = (await response.json()) as {
-        choices: [{ message: { content: string } }];
-      };
-      const reply = data.choices[0].message.content;
-      history.push({ role: "assistant", content: reply });
       return reply;
     },
   };

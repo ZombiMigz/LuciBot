@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "discord.js": "^14.26.2",
     "dotenv": "^17.4.2",
     "ts-node": "^10.9.2",
