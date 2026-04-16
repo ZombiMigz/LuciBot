@@ -9,6 +9,7 @@ export const DYNAMIC_CALL_CREATE_ID = "842224157407707136";
 export interface Env {
   token: string;
   clientId: string;
+  groqToken: string;
 }
 
 let cached: Env | null = null;
@@ -35,18 +36,20 @@ export async function getEnv(): Promise<Env> {
 
   const token = process.env.token;
   const clientId = process.env.clientId;
+  const groqToken = process.env.groqToken;
 
-  if (token && clientId) {
-    cached = { token, clientId };
+  if (token && clientId && groqToken) {
+    cached = { token, clientId, groqToken };
     return cached;
   }
 
   try {
-    const [fetchedToken, fetchedClientId] = await Promise.all([
+    const [fetchedToken, fetchedClientId, fetchedGroqToken] = await Promise.all([
       fetchSecret("TOKEN_ID"),
       fetchSecret("CLIENT_ID"),
+      fetchSecret("GROQ_TOKEN"),
     ]);
-    cached = { token: fetchedToken, clientId: fetchedClientId };
+    cached = { token: fetchedToken, clientId: fetchedClientId, groqToken: fetchedGroqToken };
     return cached;
   } catch (err) {
     console.error("Failed to fetch secrets from Secret Manager:", err);

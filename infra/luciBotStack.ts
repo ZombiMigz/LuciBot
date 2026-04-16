@@ -98,6 +98,11 @@ export class LuciBotStack extends TerraformStack {
       replication: { auto: {} },
     });
 
+    const groqTokenSecret = new SecretManagerSecret(this, "groq-token-secret", {
+      secretId: "GROQ_TOKEN",
+      replication: { auto: {} },
+    });
+
     // Service account for the VM to pull images from the registry
     const vmSa = new ServiceAccount(this, "vm-sa", {
       accountId: "lucibot-vm",
@@ -112,6 +117,12 @@ export class LuciBotStack extends TerraformStack {
 
     new SecretManagerSecretIamMember(this, "vm-sa-client-id-secret", {
       secretId: clientIdSecret.secretId,
+      role: "roles/secretmanager.secretAccessor",
+      member: `serviceAccount:${vmSa.email}`,
+    });
+
+    new SecretManagerSecretIamMember(this, "vm-sa-groq-token-secret", {
+      secretId: groqTokenSecret.secretId,
       role: "roles/secretmanager.secretAccessor",
       member: `serviceAccount:${vmSa.email}`,
     });
