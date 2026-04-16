@@ -2,7 +2,6 @@
 
 setup:
 	npm ci
-	npm exec cdktf -- get
 
 lint:
 	npm run lint
