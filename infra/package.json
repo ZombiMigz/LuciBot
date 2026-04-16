@@ -7,7 +7,7 @@
     "lint": "eslint *.ts",
     "format": "prettier --write *.ts",
     "format:check": "prettier --check *.ts",
-    "test": "vitest run"
+    "test": "vitest run --passWithNoTests"
   },
   "keywords": [],
   "author": "",
