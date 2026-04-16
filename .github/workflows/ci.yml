@@ -9,35 +9,47 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bot
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: .node-version
+          node-version-file: bot/.node-version
           cache: npm
+          cache-dependency-path: bot/package-lock.json
       - run: npm ci
       - run: npm run lint
 
   format:
     name: Format
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bot
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: .node-version
+          node-version-file: bot/.node-version
           cache: npm
+          cache-dependency-path: bot/package-lock.json
       - run: npm ci
       - run: npm run format:check
 
   test:
     name: Test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bot
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: .node-version
+          node-version-file: bot/.node-version
           cache: npm
+          cache-dependency-path: bot/package-lock.json
       - run: npm ci
       - run: npm test
