@@ -1,5 +1,8 @@
 WORKSPACES = bot infra
 
+install-hooks:
+	git config core.hooksPath .githooks
+
 lint:
 	@$(MAKE) -C bot lint
 	@$(MAKE) -C infra lint
