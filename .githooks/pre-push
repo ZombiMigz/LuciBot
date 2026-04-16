@@ -1,2 +1,2 @@
 #!/bin/sh
-make format-check
+make format-check && make test

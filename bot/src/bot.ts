@@ -1,14 +1,26 @@
 import { Client, GatewayIntentBits } from "discord.js";
 import { getEnv } from "@/src/env";
 import { createDynamicCallsServiceFromEnv } from "@/src/services/dynamicCalls/dynamicCallsService";
+import { startCommandService } from "@/src/services/commandService/commandService";
+import { createMessageService } from "@/src/services/message/messageService";
 
 async function main() {
   const env = await getEnv();
-  const client = new Client({ intents: [GatewayIntentBits.GuildVoiceStates] });
+  const client = new Client({
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
+  });
+
+  const messageService = createMessageService(client);
+
   const dynamicCallsService = createDynamicCallsServiceFromEnv();
 
-  client.on("ready", () => console.log("Bot Started"));
+  client.on("ready", async () => {
+    console.log("Bot Started");
+    await startCommandService(client, env.clientId, env.token, [messageService.command]);
+  });
+
   client.on("error", (err) => console.log(err));
+
   client.on("voiceStateUpdate", (oldState, newState) => {
     dynamicCallsService.handleVoiceStateUpdate(oldState, newState);
   });
