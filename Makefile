@@ -18,3 +18,10 @@ format-check:
 test:
 	@$(MAKE) -C bot test
 	@$(MAKE) -C infra test
+
+deploy:
+	@$(MAKE) -C infra deploy
+	@$(MAKE) -C deploy deploy
+
+logs:
+	@$(MAKE) -C deploy logs

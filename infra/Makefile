@@ -9,3 +9,6 @@ format-check:
 
 test:
 	npm run test
+
+deploy:
+	npx cdktf deploy --auto-approve
