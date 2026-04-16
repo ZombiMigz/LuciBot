@@ -2,7 +2,7 @@ import { Client } from "discord.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const MODEL = "gemma-3-27b-it";
-const MAX_HISTORY_MESSAGES = 100; // 50 exchanges — well within 128k context window
+const MAX_HISTORY_MESSAGES = 425; // ~50% of 128k context window at avg 150 tokens/message
 
 const SYSTEM_PROMPT = `\
 You are LuciBot, a Discord bot. Act exactly like Grok made by xAI — witty, direct, and unfiltered. \
@@ -15,7 +15,7 @@ You can roast people lightly when the vibe calls for it.\
 type Message = { role: "user" | "model"; content: string };
 
 export interface ChatService {
-  respond(channelId: string, content: string): Promise<string>;
+  respond(channelId: string, username: string, content: string): Promise<string>;
 }
 
 export function createChatService(client: Client, apiKey: string): ChatService {
@@ -35,8 +35,9 @@ export function createChatService(client: Client, apiKey: string): ChatService {
   }
 
   const service: ChatService = {
-    async respond(channelId: string, content: string): Promise<string> {
+    async respond(channelId: string, username: string, content: string): Promise<string> {
       const history = getHistory(channelId);
+      const taggedContent = `${username}: ${content}`;
 
       const chat = model.startChat({
         history: [...PRIMED_HISTORY, ...history].map((m) => ({
@@ -45,11 +46,11 @@ export function createChatService(client: Client, apiKey: string): ChatService {
         })),
       });
 
-      const result = await chat.sendMessage(content);
+      const result = await chat.sendMessage(taggedContent);
       const reply = result.response.text();
 
-      history.push({ role: "user", content });
-      history.push({ role: "model", content: reply });
+      history.push({ role: "user", content: taggedContent });
+      history.push({ role: "model", content: `LuciBot: ${reply}` });
 
       if (history.length > MAX_HISTORY_MESSAGES) {
         history.splice(0, history.length - MAX_HISTORY_MESSAGES);
@@ -72,7 +73,7 @@ export function createChatService(client: Client, apiKey: string): ChatService {
 
     try {
       await message.channel.sendTyping();
-      const reply = await service.respond(message.channelId, content);
+      const reply = await service.respond(message.channelId, message.author.username, content);
       await message.reply(reply);
     } catch (err) {
       console.error("Chat error:", err);
