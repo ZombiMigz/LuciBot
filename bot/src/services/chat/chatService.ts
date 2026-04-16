@@ -1,9 +1,14 @@
 import { Client } from "discord.js";
-import { ChatSession, Content, GoogleGenerativeAI, GoogleGenerativeAIFetchError } from "@google/generative-ai";
+import {
+  ChatSession,
+  Content,
+  GoogleGenerativeAI,
+  GoogleGenerativeAIFetchError,
+} from "@google/generative-ai";
 
 const MODEL = "gemma-3-27b-it";
-const COMPRESS_AFTER = 50;  // compress when session hits this many messages
-const KEEP_RECENT = 20;     // keep this many recent messages uncompressed after compression
+const COMPRESS_AFTER = 50; // compress when session hits this many messages
+const KEEP_RECENT = 20; // keep this many recent messages uncompressed after compression
 
 const SYSTEM_PROMPT = `\
 You are LuciBot, a Discord bot. Act exactly like Grok made by xAI — witty, direct, and unfiltered. \
