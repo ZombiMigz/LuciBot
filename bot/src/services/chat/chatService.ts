@@ -1,8 +1,9 @@
 import { Client } from "discord.js";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { ChatSession, Content, GoogleGenerativeAI, GoogleGenerativeAIFetchError } from "@google/generative-ai";
 
 const MODEL = "gemma-3-27b-it";
-const MAX_HISTORY_MESSAGES = 425; // ~50% of 128k context window at avg 150 tokens/message
+const COMPRESS_AFTER = 50;  // compress when session hits this many messages
+const KEEP_RECENT = 20;     // keep this many recent messages uncompressed after compression
 
 const SYSTEM_PROMPT = `\
 You are LuciBot, a Discord bot. Act exactly like Grok made by xAI — witty, direct, and unfiltered. \
@@ -12,7 +13,13 @@ Keep responses concise and punchy — this is Discord, not an essay. \
 You can roast people lightly when the vibe calls for it.\
 `;
 
-type Message = { role: "user" | "model"; content: string };
+// Gemma doesn't support systemInstruction — prime with a fake opening exchange instead
+const PRIMED_HISTORY: Content[] = [
+  { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
+  { role: "model", parts: [{ text: "Got it. I'm LuciBot." }] },
+];
+
+type ChannelSession = { chat: ChatSession; messageCount: number };
 
 export interface ChatService {
   respond(channelId: string, username: string, content: string): Promise<string>;
@@ -21,40 +28,51 @@ export interface ChatService {
 export function createChatService(client: Client, apiKey: string): ChatService {
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: MODEL });
-  const histories = new Map<string, Message[]>();
+  const sessions = new Map<string, ChannelSession>();
 
-  // Gemma doesn't support systemInstruction — prime with a fake opening exchange instead
-  const PRIMED_HISTORY: Message[] = [
-    { role: "user", content: SYSTEM_PROMPT },
-    { role: "model", content: "Got it. I'm LuciBot." },
-  ];
+  function newSession(history: Content[] = PRIMED_HISTORY): ChannelSession {
+    return { chat: model.startChat({ history }), messageCount: 0 };
+  }
 
-  function getHistory(channelId: string): Message[] {
-    if (!histories.has(channelId)) histories.set(channelId, []);
-    return histories.get(channelId)!;
+  function getSession(channelId: string): ChannelSession {
+    if (!sessions.has(channelId)) sessions.set(channelId, newSession());
+    return sessions.get(channelId)!;
+  }
+
+  async function compressSession(session: ChannelSession): Promise<ChannelSession> {
+    const history = await session.chat.getHistory();
+    // history includes PRIMED_HISTORY at the front — skip it when compressing
+    const conversationHistory = history.slice(PRIMED_HISTORY.length);
+    const toCompress = conversationHistory.slice(0, conversationHistory.length - KEEP_RECENT);
+    const recent = conversationHistory.slice(conversationHistory.length - KEEP_RECENT);
+
+    const transcript = toCompress.map((m) => m.parts.map((p) => p.text).join("")).join("\n");
+    const summaryChat = model.startChat({ history: [] });
+    const result = await summaryChat.sendMessage(
+      `Summarize the following Discord conversation concisely. Preserve key facts, topics discussed, opinions expressed, and who said what. This summary will be used as context for the ongoing conversation.\n\n${transcript}`
+    );
+    const summary = result.response.text();
+
+    return newSession([
+      ...PRIMED_HISTORY,
+      { role: "user", parts: [{ text: "[Earlier conversation summary]" }] },
+      { role: "model", parts: [{ text: `LuciBot: ${summary}` }] },
+      ...recent,
+    ]);
   }
 
   const service: ChatService = {
     async respond(channelId: string, username: string, content: string): Promise<string> {
-      const history = getHistory(channelId);
-      const taggedContent = `${username}: ${content}`;
+      let session = getSession(channelId);
 
-      const chat = model.startChat({
-        history: [...PRIMED_HISTORY, ...history].map((m) => ({
-          role: m.role,
-          parts: [{ text: m.content }],
-        })),
-      });
-
-      const result = await chat.sendMessage(taggedContent);
-      const reply = result.response.text();
-
-      history.push({ role: "user", content: taggedContent });
-      history.push({ role: "model", content: `LuciBot: ${reply}` });
-
-      if (history.length > MAX_HISTORY_MESSAGES) {
-        history.splice(0, history.length - MAX_HISTORY_MESSAGES);
+      if (session.messageCount >= COMPRESS_AFTER) {
+        session = await compressSession(session);
+        sessions.set(channelId, session);
       }
+
+      const result = await session.chat.sendMessage(`${username}: ${content}`);
+      const reply = result.response.text();
+      session.messageCount++;
 
       return reply;
     },
@@ -76,7 +94,16 @@ export function createChatService(client: Client, apiKey: string): ChatService {
       const reply = await service.respond(message.channelId, message.author.username, content);
       await message.reply(reply);
     } catch (err) {
-      console.error("Chat error:", err);
+      if (err instanceof GoogleGenerativeAIFetchError && err.status === 429) {
+        const retryInfo = err.errorDetails?.find((d) =>
+          (d["@type"] as string)?.includes("RetryInfo")
+        );
+        const delay = retryInfo?.["retryDelay"] as string | undefined;
+        const wait = delay ? ` Try again in ${delay}.` : " Try again in about a minute.";
+        await message.reply(`I've hit the rate limit.${wait}`);
+      } else {
+        console.error("Chat error:", err);
+      }
     }
   });
 
