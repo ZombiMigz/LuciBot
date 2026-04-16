@@ -1,37 +1,55 @@
 import dotenv from "dotenv";
-import { z } from "zod";
 
-const envSchema = z.object({
-  token: z.string().min(1),
-  clientId: z.string().min(1),
-  guildId: z.string().min(1),
-  dynamicCallCategoryId: z.string().min(1),
-  dynamicCallCreateId: z.string().min(1),
-});
+const GCP_PROJECT = "lucibot-493305";
 
-export type Env = z.infer<typeof envSchema>;
+export const GUILD_ID = "401834711275667465";
+export const DYNAMIC_CALL_CATEGORY_ID = "842224094959370300";
+export const DYNAMIC_CALL_CREATE_ID = "842224157407707136";
+
+export interface Env {
+  token: string;
+  clientId: string;
+}
 
 let cached: Env | null = null;
 
-export function getEnv(): Env {
+async function fetchSecret(secretId: string): Promise<string> {
+  const tokenRes = await fetch(
+    "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token",
+    { headers: { "Metadata-Flavor": "Google" } }
+  );
+  const { access_token } = (await tokenRes.json()) as { access_token: string };
+
+  const res = await fetch(
+    `https://secretmanager.googleapis.com/v1/projects/${GCP_PROJECT}/secrets/${secretId}/versions/latest:access`,
+    { headers: { Authorization: `Bearer ${access_token}` } }
+  );
+  const data = (await res.json()) as { payload: { data: string } };
+  return Buffer.from(data.payload.data, "base64").toString();
+}
+
+export async function getEnv(): Promise<Env> {
   if (cached) return cached;
 
   dotenv.config();
 
-  const parsed = envSchema.safeParse({
-    token: process.env.token,
-    clientId: process.env.clientId,
-    guildId: process.env.guildId,
-    dynamicCallCategoryId: process.env.dynamicCallCategoryId,
-    dynamicCallCreateId: process.env.dynamicCallCreateId,
-  });
+  const token = process.env.token;
+  const clientId = process.env.clientId;
 
-  if (!parsed.success) {
-    console.error("Missing or invalid environment variables:");
-    console.error(parsed.error.flatten().fieldErrors);
-    process.exit(1);
+  if (token && clientId) {
+    cached = { token, clientId };
+    return cached;
   }
 
-  cached = parsed.data;
-  return cached;
+  try {
+    const [fetchedToken, fetchedClientId] = await Promise.all([
+      fetchSecret("TOKEN_ID"),
+      fetchSecret("CLIENT_ID"),
+    ]);
+    cached = { token: fetchedToken, clientId: fetchedClientId };
+    return cached;
+  } catch (err) {
+    console.error("Failed to fetch secrets from Secret Manager:", err);
+    process.exit(1);
+  }
 }

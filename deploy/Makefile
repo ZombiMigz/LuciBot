@@ -1,3 +1,5 @@
+.PHONY: deploy logs
+
 deploy:
 	sh deploy.sh
 

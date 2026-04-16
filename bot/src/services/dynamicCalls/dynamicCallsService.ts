@@ -1,5 +1,5 @@
 import { ChannelType, GuildMember, VoiceBasedChannel, VoiceState } from "discord.js";
-import { getEnv } from "@/src/env";
+import { DYNAMIC_CALL_CATEGORY_ID, DYNAMIC_CALL_CREATE_ID } from "@/src/env";
 
 const CHANNEL_LEAVE_DELETE_DELAY_MS = 2000;
 
@@ -54,6 +54,5 @@ export function createDynamicCallsService(
 }
 
 export function createDynamicCallsServiceFromEnv(): DynamicCallsService {
-  const env = getEnv();
-  return createDynamicCallsService(env.dynamicCallCategoryId, env.dynamicCallCreateId);
+  return createDynamicCallsService(DYNAMIC_CALL_CATEGORY_ID, DYNAMIC_CALL_CREATE_ID);
 }

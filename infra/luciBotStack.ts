@@ -8,6 +8,8 @@ import { IamWorkloadIdentityPoolProvider } from "@cdktf/provider-google/lib/iam-
 import { ServiceAccount } from "@cdktf/provider-google/lib/service-account";
 import { ServiceAccountIamMember } from "@cdktf/provider-google/lib/service-account-iam-member";
 import { ComputeInstance } from "@cdktf/provider-google/lib/compute-instance";
+import { SecretManagerSecret } from "@cdktf/provider-google/lib/secret-manager-secret";
+import { SecretManagerSecretIamMember } from "@cdktf/provider-google/lib/secret-manager-secret-iam-member";
 import { COMPUTE_ZONE, GITHUB_REPO, PROJECT, REGION, REGISTRY_URL } from "./constants";
 
 export class LuciBotStack extends TerraformStack {
@@ -85,10 +87,33 @@ export class LuciBotStack extends TerraformStack {
       member: `serviceAccount:${sa.email}`,
     });
 
+    // Secrets for bot credentials
+    const tokenSecret = new SecretManagerSecret(this, "token-secret", {
+      secretId: "TOKEN_ID",
+      replication: { auto: {} },
+    });
+
+    const clientIdSecret = new SecretManagerSecret(this, "client-id-secret", {
+      secretId: "CLIENT_ID",
+      replication: { auto: {} },
+    });
+
     // Service account for the VM to pull images from the registry
     const vmSa = new ServiceAccount(this, "vm-sa", {
       accountId: "lucibot-vm",
       displayName: "LuciBot VM",
+    });
+
+    new SecretManagerSecretIamMember(this, "vm-sa-token-secret", {
+      secretId: tokenSecret.secretId,
+      role: "roles/secretmanager.secretAccessor",
+      member: `serviceAccount:${vmSa.email}`,
+    });
+
+    new SecretManagerSecretIamMember(this, "vm-sa-client-id-secret", {
+      secretId: clientIdSecret.secretId,
+      role: "roles/secretmanager.secretAccessor",
+      member: `serviceAccount:${vmSa.email}`,
     });
 
     new ArtifactRegistryRepositoryIamMember(this, "vm-sa-registry-reader", {

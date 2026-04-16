@@ -1,3 +1,5 @@
+.PHONY: lint format format-check test
+
 lint:
 	npm run lint
 

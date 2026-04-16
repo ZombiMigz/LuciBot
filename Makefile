@@ -1,5 +1,7 @@
 WORKSPACES = bot infra
 
+.PHONY: install-hooks lint format format-check test deploy logs
+
 install-hooks:
 	git config core.hooksPath .githooks
 
