@@ -1,7 +1,6 @@
 import { Client } from "discord.js";
 
-const GEMINI_API_URL =
-  "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 const MODEL = "gemini-2.0-flash";
 const MAX_HISTORY_MESSAGES = 100; // 50 exchanges — well within 128k context window
 
