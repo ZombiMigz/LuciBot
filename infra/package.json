@@ -4,12 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint *.ts",
+    "format": "prettier --write *.ts",
+    "format:check": "prettier --check *.ts",
+    "test": "cdktf synth"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.0",
+    "eslint-config-prettier": "^10.1.8",
+    "jiti": "^2.6.1",
+    "prettier": "^3.8.2",
+    "typescript-eslint": "^8.58.2"
+  },
   "dependencies": {
     "@cdktf/provider-google": "^16.12.1",
     "cdktf": "^0.21.0",

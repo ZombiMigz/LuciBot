@@ -7,49 +7,58 @@ on:
 
 jobs:
   lint:
-    name: Lint
+    name: Lint (${{ matrix.workspace }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [bot, infra]
     defaults:
       run:
-        working-directory: bot
+        working-directory: ${{ matrix.workspace }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: bot/.node-version
+          node-version-file: ${{ matrix.workspace }}/.node-version
           cache: npm
-          cache-dependency-path: bot/package-lock.json
+          cache-dependency-path: ${{ matrix.workspace }}/package-lock.json
       - run: npm ci
       - run: npm run lint
 
   format:
-    name: Format
+    name: Format (${{ matrix.workspace }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [bot, infra]
     defaults:
       run:
-        working-directory: bot
+        working-directory: ${{ matrix.workspace }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: bot/.node-version
+          node-version-file: ${{ matrix.workspace }}/.node-version
           cache: npm
-          cache-dependency-path: bot/package-lock.json
+          cache-dependency-path: ${{ matrix.workspace }}/package-lock.json
       - run: npm ci
       - run: npm run format:check
 
   test:
-    name: Test
+    name: Test (${{ matrix.workspace }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [bot, infra]
     defaults:
       run:
-        working-directory: bot
+        working-directory: ${{ matrix.workspace }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: bot/.node-version
+          node-version-file: ${{ matrix.workspace }}/.node-version
           cache: npm
-          cache-dependency-path: bot/package-lock.json
+          cache-dependency-path: ${{ matrix.workspace }}/package-lock.json
       - run: npm ci
       - run: npm test
