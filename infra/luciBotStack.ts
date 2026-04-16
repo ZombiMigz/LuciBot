@@ -121,16 +121,16 @@ export class LuciBotStack extends TerraformStack {
       member: `serviceAccount:${vmSa.email}`,
     });
 
-    new SecretManagerSecretIamMember(this, "vm-sa-gemini-token-secret", {
-      secretId: geminiTokenSecret.secretId,
-      role: "roles/secretmanager.secretAccessor",
-      member: `serviceAccount:${vmSa.email}`,
-    });
-
     new ArtifactRegistryRepositoryIamMember(this, "vm-sa-registry-reader", {
       repository: registry.name,
       location: REGION,
       role: "roles/artifactregistry.reader",
+      member: `serviceAccount:${vmSa.email}`,
+    });
+
+    new SecretManagerSecretIamMember(this, "vm-sa-gemini-token-secret", {
+      secretId: geminiTokenSecret.secretId,
+      role: "roles/secretmanager.secretAccessor",
       member: `serviceAccount:${vmSa.email}`,
     });
 

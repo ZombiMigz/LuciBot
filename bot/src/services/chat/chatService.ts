@@ -1,7 +1,7 @@
 import { Client } from "discord.js";
 
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-const MODEL = "gemini-2.0-flash";
+const MODEL = "gemma-3-27b-it";
 const MAX_HISTORY_MESSAGES = 100; // 50 exchanges — well within 128k context window
 
 const SYSTEM_PROMPT = `\
@@ -60,7 +60,7 @@ export function createChatService(client: Client, apiKey: string): ChatService {
 
       if (!response.ok) {
         history.pop();
-        throw new Error(`Groq API error: ${response.status}`);
+        throw new Error(`Gemini API error: ${response.status}`);
       }
 
       const data = (await response.json()) as {
