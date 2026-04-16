@@ -1,4 +1,4 @@
-import { Client, SlashCommandBuilder, TextChannel } from "discord.js";
+import { Client, PermissionFlagsBits, SlashCommandBuilder, TextChannel } from "discord.js";
 import { CommandDefinition } from "@/src/services/commandService/commandService";
 
 export interface MessageService {
@@ -19,6 +19,7 @@ export function createMessageService(client: Client): MessageService {
     builder: new SlashCommandBuilder()
       .setName("msg")
       .setDescription("Send a message to a channel")
+      .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
       .addChannelOption((option) =>
         option.setName("channel").setDescription("Channel to send the message to").setRequired(true)
       )
