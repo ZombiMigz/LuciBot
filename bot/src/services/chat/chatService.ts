@@ -20,8 +20,14 @@ export interface ChatService {
 
 export function createChatService(client: Client, apiKey: string): ChatService {
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: MODEL, systemInstruction: SYSTEM_PROMPT });
+  const model = genAI.getGenerativeModel({ model: MODEL });
   const histories = new Map<string, Message[]>();
+
+  // Gemma doesn't support systemInstruction — prime with a fake opening exchange instead
+  const PRIMED_HISTORY: Message[] = [
+    { role: "user", content: SYSTEM_PROMPT },
+    { role: "model", content: "Got it. I'm LuciBot." },
+  ];
 
   function getHistory(channelId: string): Message[] {
     if (!histories.has(channelId)) histories.set(channelId, []);
@@ -33,7 +39,10 @@ export function createChatService(client: Client, apiKey: string): ChatService {
       const history = getHistory(channelId);
 
       const chat = model.startChat({
-        history: history.map((m) => ({ role: m.role, parts: [{ text: m.content }] })),
+        history: [...PRIMED_HISTORY, ...history].map((m) => ({
+          role: m.role,
+          parts: [{ text: m.content }],
+        })),
       });
 
       const result = await chat.sendMessage(content);
