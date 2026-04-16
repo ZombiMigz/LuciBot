@@ -22,7 +22,7 @@ jobs:
           node-version-file: ${{ matrix.workspace }}/.node-version
           cache: npm
           cache-dependency-path: ${{ matrix.workspace }}/package-lock.json
-      - run: npm ci
+      - run: make setup
       - run: npm run lint
 
   format:
@@ -41,7 +41,7 @@ jobs:
           node-version-file: ${{ matrix.workspace }}/.node-version
           cache: npm
           cache-dependency-path: ${{ matrix.workspace }}/package-lock.json
-      - run: npm ci
+      - run: make setup
       - run: npm run format:check
 
   test:
@@ -60,5 +60,5 @@ jobs:
           node-version-file: ${{ matrix.workspace }}/.node-version
           cache: npm
           cache-dependency-path: ${{ matrix.workspace }}/package-lock.json
-      - run: npm ci
+      - run: make setup
       - run: npm test

@@ -1,4 +1,8 @@
-.PHONY: lint format format-check test deploy
+.PHONY: setup lint format format-check test deploy
+
+setup:
+	npm ci
+	npx cdktf get
 
 lint:
 	npm run lint

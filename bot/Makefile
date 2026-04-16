@@ -1,4 +1,7 @@
-.PHONY: lint format format-check test
+.PHONY: setup lint format format-check test
+
+setup:
+	npm ci
 
 lint:
 	npm run lint
