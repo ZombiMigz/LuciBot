@@ -7,7 +7,7 @@
     "lint": "eslint *.ts",
     "format": "prettier --write *.ts",
     "format:check": "prettier --check *.ts",
-    "test": "cdktf synth"
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +19,8 @@
     "eslint-config-prettier": "^10.1.8",
     "jiti": "^2.6.1",
     "prettier": "^3.8.2",
-    "typescript-eslint": "^8.58.2"
+    "typescript-eslint": "^8.58.2",
+    "vitest": "^4.1.4"
   },
   "dependencies": {
     "@cdktf/provider-google": "^16.12.1",
