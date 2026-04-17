@@ -52,9 +52,13 @@ export function createChatService(client: Client, apiKey: string): ChatService {
     const recent = conversationHistory.slice(conversationHistory.length - KEEP_RECENT);
 
     const transcript = toCompress.map((m) => m.parts.map((p) => p.text).join("")).join("\n");
-    const summaryChat = model.startChat({ history: [] });
+    const summaryModel = genAI.getGenerativeModel({
+      model: MODEL,
+      generationConfig: { maxOutputTokens: 400 },
+    });
+    const summaryChat = summaryModel.startChat({ history: [] });
     const result = await summaryChat.sendMessage(
-      `Summarize the following Discord conversation concisely. Preserve key facts, topics discussed, opinions expressed, and who said what. This summary will be used as context for the ongoing conversation.\n\n${transcript}`
+      `Summarize the following Discord conversation in at most 300 words. Bullet-point format. Preserve key facts, topics, opinions, and who said what.\n\n${transcript}`
     );
     const summary = result.response.text();
 
