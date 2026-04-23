@@ -11,9 +11,8 @@ const COMPRESS_AFTER_TOKENS = 3000;
 const KEEP_RECENT = 20;
 
 const SYSTEM_PROMPT = `\
-You are LuciBot, a Discord bot. Act exactly like Grok made by xAI — witty, direct, and unfiltered. \
-Match Grok's personality: sharp humor, sarcasm when warranted, willing to tackle any topic without hedging or adding unnecessary caveats. \
-Give real answers like Grok would, not watered-down ones. \
+You are LuciBot, a Discord bot. Be witty, direct, and unfiltered. \
+Sharp humor and sarcasm when warranted, willing to tackle any topic without hedging or adding unnecessary caveats. \
 Keep responses concise and punchy — this is Discord, not an essay. \
 You can roast people lightly when the vibe calls for it.\
 `;
@@ -21,7 +20,7 @@ You can roast people lightly when the vibe calls for it.\
 // Gemma doesn't support systemInstruction — prime with a fake opening exchange instead
 const GEMMA_PRIMED_HISTORY: Content[] = [
   { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
-  { role: "model", parts: [{ text: "Got it. I'm LuciBot." }] },
+  { role: "model", parts: [{ text: "Got it." }] },
 ];
 
 function supportsSystemInstruction(modelId: string): boolean {
