@@ -63,9 +63,14 @@ export function createChatService(client: Client, apiKey: string): ChatService {
     return sessions.get(channelId)!;
   }
 
-  async function extractConversationHistory(session: ChannelSession, modelId: string): Promise<Content[]> {
+  async function extractConversationHistory(
+    session: ChannelSession,
+    modelId: string
+  ): Promise<Content[]> {
     const history = await session.chat.getHistory();
-    return supportsSystemInstruction(modelId) ? history : history.slice(GEMMA_PRIMED_HISTORY.length);
+    return supportsSystemInstruction(modelId)
+      ? history
+      : history.slice(GEMMA_PRIMED_HISTORY.length);
   }
 
   async function rotateModel(): Promise<void> {
@@ -91,9 +96,11 @@ export function createChatService(client: Client, apiKey: string): ChatService {
       model: modelId,
       generationConfig: { maxOutputTokens: 400 },
     });
-    const result = await summaryModel.startChat({ history: [] }).sendMessage(
-      `Summarize the following Discord conversation in at most 300 words. Bullet-point format. Preserve key facts, topics, opinions, and who said what.\n\n${transcript}`
-    );
+    const result = await summaryModel
+      .startChat({ history: [] })
+      .sendMessage(
+        `Summarize the following Discord conversation in at most 300 words. Bullet-point format. Preserve key facts, topics, opinions, and who said what.\n\n${transcript}`
+      );
     const summary = result.response.text();
 
     return newSession(modelId, [
@@ -117,7 +124,11 @@ export function createChatService(client: Client, apiKey: string): ChatService {
         const result = await session.chat.sendMessage(`${username}: ${content}`);
         return result.response.text();
       } catch (err) {
-        if (err instanceof GoogleGenerativeAIFetchError && err.status === 429 && modelIndex < MODELS.length - 1) {
+        if (
+          err instanceof GoogleGenerativeAIFetchError &&
+          err.status === 429 &&
+          modelIndex < MODELS.length - 1
+        ) {
           await rotateModel();
           const retrySession = sessions.get(channelId)!;
           const result = await retrySession.chat.sendMessage(`${username}: ${content}`);
