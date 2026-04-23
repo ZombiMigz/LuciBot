@@ -7,7 +7,7 @@ import {
 } from "@google/generative-ai";
 
 const MODELS = ["gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.5-flash-lite", "gemma-3-27b-it"];
-const COMPRESS_AFTER = 50;
+const COMPRESS_AFTER_TOKENS = 3000;
 const KEEP_RECENT = 20;
 
 const SYSTEM_PROMPT = `\
@@ -28,7 +28,12 @@ function supportsSystemInstruction(modelId: string): boolean {
   return modelId.startsWith("gemini-");
 }
 
-type ChannelSession = { chat: ChatSession; messageCount: number };
+type ChannelSession = { chat: ChatSession };
+
+function estimateTokens(history: Content[]): number {
+  const text = history.flatMap((m) => m.parts.map((p) => p.text ?? "")).join("");
+  return Math.ceil(text.length / 4);
+}
 
 export interface ChatService {
   respond(channelId: string, username: string, content: string): Promise<string>;
@@ -51,7 +56,7 @@ export function createChatService(client: Client, apiKey: string): ChatService {
     const history = supportsSystemInstruction(modelId)
       ? conversationHistory
       : [...GEMMA_PRIMED_HISTORY, ...conversationHistory];
-    return { chat: model.startChat({ history }), messageCount: 0 };
+    return { chat: model.startChat({ history }) };
   }
 
   function getSession(channelId: string): ChannelSession {
@@ -103,24 +108,21 @@ export function createChatService(client: Client, apiKey: string): ChatService {
     async respond(channelId: string, username: string, content: string): Promise<string> {
       let session = getSession(channelId);
 
-      if (session.messageCount >= COMPRESS_AFTER) {
+      const conversationHistory = await extractConversationHistory(session, currentModelId());
+      if (estimateTokens(conversationHistory) >= COMPRESS_AFTER_TOKENS) {
         session = await compressSession(session);
         sessions.set(channelId, session);
       }
 
       try {
         const result = await session.chat.sendMessage(`${username}: ${content}`);
-        const reply = result.response.text();
-        session.messageCount++;
-        return reply;
+        return result.response.text();
       } catch (err) {
         if (err instanceof GoogleGenerativeAIFetchError && err.status === 429 && modelIndex < MODELS.length - 1) {
           await rotateModel();
           const retrySession = sessions.get(channelId)!;
           const result = await retrySession.chat.sendMessage(`${username}: ${content}`);
-          const reply = result.response.text();
-          retrySession.messageCount++;
-          return reply;
+          return result.response.text();
         }
         throw err;
       }
