@@ -6,9 +6,9 @@ import {
   GoogleGenerativeAIFetchError,
 } from "@google/generative-ai";
 
-const MODEL = "gemma-3-27b-it";
-const COMPRESS_AFTER = 50; // compress when session hits this many messages
-const KEEP_RECENT = 20; // keep this many recent messages uncompressed after compression
+const MODELS = ["gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.5-flash-lite", "gemma-3-27b-it"];
+const COMPRESS_AFTER = 50;
+const KEEP_RECENT = 20;
 
 const SYSTEM_PROMPT = `\
 You are LuciBot, a Discord bot. Act exactly like Grok made by xAI — witty, direct, and unfiltered. \
@@ -19,10 +19,14 @@ You can roast people lightly when the vibe calls for it.\
 `;
 
 // Gemma doesn't support systemInstruction — prime with a fake opening exchange instead
-const PRIMED_HISTORY: Content[] = [
+const GEMMA_PRIMED_HISTORY: Content[] = [
   { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
   { role: "model", parts: [{ text: "Got it. I'm LuciBot." }] },
 ];
+
+function supportsSystemInstruction(modelId: string): boolean {
+  return modelId.startsWith("gemini-");
+}
 
 type ChannelSession = { chat: ChatSession; messageCount: number };
 
@@ -32,38 +36,63 @@ export interface ChatService {
 
 export function createChatService(client: Client, apiKey: string): ChatService {
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: MODEL });
+  let modelIndex = 0;
   const sessions = new Map<string, ChannelSession>();
 
-  function newSession(history: Content[] = PRIMED_HISTORY): ChannelSession {
+  function currentModelId(): string {
+    return MODELS[modelIndex];
+  }
+
+  function newSession(modelId: string, conversationHistory: Content[] = []): ChannelSession {
+    const model = genAI.getGenerativeModel({
+      model: modelId,
+      ...(supportsSystemInstruction(modelId) ? { systemInstruction: SYSTEM_PROMPT } : {}),
+    });
+    const history = supportsSystemInstruction(modelId)
+      ? conversationHistory
+      : [...GEMMA_PRIMED_HISTORY, ...conversationHistory];
     return { chat: model.startChat({ history }), messageCount: 0 };
   }
 
   function getSession(channelId: string): ChannelSession {
-    if (!sessions.has(channelId)) sessions.set(channelId, newSession());
+    if (!sessions.has(channelId)) sessions.set(channelId, newSession(currentModelId()));
     return sessions.get(channelId)!;
   }
 
-  async function compressSession(session: ChannelSession): Promise<ChannelSession> {
+  async function extractConversationHistory(session: ChannelSession, modelId: string): Promise<Content[]> {
     const history = await session.chat.getHistory();
-    // history includes PRIMED_HISTORY at the front — skip it when compressing
-    const conversationHistory = history.slice(PRIMED_HISTORY.length);
+    return supportsSystemInstruction(modelId) ? history : history.slice(GEMMA_PRIMED_HISTORY.length);
+  }
+
+  async function rotateModel(): Promise<void> {
+    if (modelIndex >= MODELS.length - 1) return;
+    const oldModelId = currentModelId();
+    modelIndex++;
+    console.log(`Rate limited on ${oldModelId}, switching to ${currentModelId()}`);
+
+    for (const [channelId, session] of sessions.entries()) {
+      const conversationHistory = await extractConversationHistory(session, oldModelId);
+      sessions.set(channelId, newSession(currentModelId(), conversationHistory));
+    }
+  }
+
+  async function compressSession(session: ChannelSession): Promise<ChannelSession> {
+    const modelId = currentModelId();
+    const conversationHistory = await extractConversationHistory(session, modelId);
     const toCompress = conversationHistory.slice(0, conversationHistory.length - KEEP_RECENT);
     const recent = conversationHistory.slice(conversationHistory.length - KEEP_RECENT);
 
     const transcript = toCompress.map((m) => m.parts.map((p) => p.text).join("")).join("\n");
     const summaryModel = genAI.getGenerativeModel({
-      model: MODEL,
+      model: modelId,
       generationConfig: { maxOutputTokens: 400 },
     });
-    const summaryChat = summaryModel.startChat({ history: [] });
-    const result = await summaryChat.sendMessage(
+    const result = await summaryModel.startChat({ history: [] }).sendMessage(
       `Summarize the following Discord conversation in at most 300 words. Bullet-point format. Preserve key facts, topics, opinions, and who said what.\n\n${transcript}`
     );
     const summary = result.response.text();
 
-    return newSession([
-      ...PRIMED_HISTORY,
+    return newSession(modelId, [
       { role: "user", parts: [{ text: "[Earlier conversation summary]" }] },
       { role: "model", parts: [{ text: `LuciBot: ${summary}` }] },
       ...recent,
@@ -79,11 +108,22 @@ export function createChatService(client: Client, apiKey: string): ChatService {
         sessions.set(channelId, session);
       }
 
-      const result = await session.chat.sendMessage(`${username}: ${content}`);
-      const reply = result.response.text();
-      session.messageCount++;
-
-      return reply;
+      try {
+        const result = await session.chat.sendMessage(`${username}: ${content}`);
+        const reply = result.response.text();
+        session.messageCount++;
+        return reply;
+      } catch (err) {
+        if (err instanceof GoogleGenerativeAIFetchError && err.status === 429 && modelIndex < MODELS.length - 1) {
+          await rotateModel();
+          const retrySession = sessions.get(channelId)!;
+          const result = await retrySession.chat.sendMessage(`${username}: ${content}`);
+          const reply = result.response.text();
+          retrySession.messageCount++;
+          return reply;
+        }
+        throw err;
+      }
     },
   };
 
@@ -109,7 +149,7 @@ export function createChatService(client: Client, apiKey: string): ChatService {
         );
         const delay = retryInfo?.["retryDelay"] as string | undefined;
         const wait = delay ? ` Try again in ${delay}.` : " Try again in about a minute.";
-        await message.reply(`I've hit the rate limit.${wait}`);
+        await message.reply(`I've hit the rate limit on all models.${wait}`);
       } else {
         console.error("Chat error:", err);
       }
