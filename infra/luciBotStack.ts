@@ -8,6 +8,7 @@ import { IamWorkloadIdentityPoolProvider } from "@cdktf/provider-google/lib/iam-
 import { ServiceAccount } from "@cdktf/provider-google/lib/service-account";
 import { ServiceAccountIamMember } from "@cdktf/provider-google/lib/service-account-iam-member";
 import { ComputeInstance } from "@cdktf/provider-google/lib/compute-instance";
+import { ComputeInstanceIamMember } from "@cdktf/provider-google/lib/compute-instance-iam-member";
 import { SecretManagerSecret } from "@cdktf/provider-google/lib/secret-manager-secret";
 import { SecretManagerSecretIamMember } from "@cdktf/provider-google/lib/secret-manager-secret-iam-member";
 import { COMPUTE_ZONE, GITHUB_REPO, PROJECT, REGION, REGISTRY_URL } from "./constants";
@@ -59,6 +60,7 @@ export class LuciBotStack extends TerraformStack {
         "google.subject": "assertion.sub",
         "attribute.repository": "assertion.repository",
         "attribute.actor": "assertion.actor",
+        "attribute.workflow_ref": "assertion.workflow_ref",
       },
       attributeCondition: `attribute.repository == "${GITHUB_REPO}"`,
       oidc: {
@@ -66,25 +68,38 @@ export class LuciBotStack extends TerraformStack {
       },
     });
 
-    // Service account that GitHub Actions will impersonate
-    const sa = new ServiceAccount(this, "github-actions-sa", {
+    // Service account that GitHub Actions will impersonate to build images
+    const buildSa = new ServiceAccount(this, "github-actions-sa", {
       accountId: "github-actions-lucibot",
       displayName: "GitHub Actions — LuciBot",
     });
 
-    // Allow the GitHub repo's OIDC identity to impersonate the SA
+    // Service account that the Docker workflow will impersonate to deploy only this VM
+    const deploySa = new ServiceAccount(this, "github-actions-deploy-sa", {
+      accountId: "github-actions-deploy-lucibot",
+      displayName: "GitHub Actions Deploy — LuciBot",
+    });
+
+    // Allow the GitHub repo's OIDC identity to impersonate the build SA
     new ServiceAccountIamMember(this, "wif-sa-binding", {
-      serviceAccountId: sa.name,
+      serviceAccountId: buildSa.name,
       role: "roles/iam.workloadIdentityUser",
       member: `principalSet://iam.googleapis.com/${pool.name}/attribute.repository/${GITHUB_REPO}`,
     });
 
-    // Allow the SA to push images to the registry
+    // Allow only the Docker workflow on main to impersonate the deploy SA
+    new ServiceAccountIamMember(this, "wif-deploy-sa-binding", {
+      serviceAccountId: deploySa.name,
+      role: "roles/iam.workloadIdentityUser",
+      member: `principalSet://iam.googleapis.com/${pool.name}/attribute.workflow_ref/${GITHUB_REPO}/.github/workflows/docker.yml@refs/heads/main`,
+    });
+
+    // Allow the build SA to push images to the registry
     new ArtifactRegistryRepositoryIamMember(this, "sa-registry-writer", {
       repository: registry.name,
       location: REGION,
       role: "roles/artifactregistry.writer",
-      member: `serviceAccount:${sa.email}`,
+      member: `serviceAccount:${buildSa.email}`,
     });
 
     // Secrets for bot credentials
@@ -135,7 +150,7 @@ export class LuciBotStack extends TerraformStack {
     });
 
     // e2-micro VM on Container-Optimized OS — qualifies for always-free tier
-    new ComputeInstance(this, "bot-vm", {
+    const botVm = new ComputeInstance(this, "bot-vm", {
       name: "lucibot",
       machineType: "e2-micro",
       zone: COMPUTE_ZONE,
@@ -166,6 +181,15 @@ export class LuciBotStack extends TerraformStack {
         scopes: ["https://www.googleapis.com/auth/cloud-platform"],
       },
       allowStoppingForUpdate: true,
+    });
+
+    // Allow the deploy SA to update container metadata and reset only the LuciBot VM
+    new ComputeInstanceIamMember(this, "deploy-sa-bot-vm-admin", {
+      project: PROJECT,
+      zone: COMPUTE_ZONE,
+      instanceName: botVm.name,
+      role: "roles/compute.instanceAdmin.v1",
+      member: `serviceAccount:${deploySa.email}`,
     });
   }
 }
