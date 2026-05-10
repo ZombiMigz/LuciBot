@@ -4,19 +4,37 @@ set -e
 PROJECT="lucibot-493305"
 ZONE="us-west1-a"
 INSTANCE="lucibot"
-IMAGE="us-west1-docker.pkg.dev/lucibot-493305/lucibot/lucibot:latest"
+REGISTRY_URL="us-west1-docker.pkg.dev/lucibot-493305/lucibot"
+IMAGE_TAG="${IMAGE_TAG:-${1:-latest}}"
+IMAGE="$REGISTRY_URL/lucibot:$IMAGE_TAG"
+CONTAINER_DECLARATION="$(mktemp)"
+
+cleanup() {
+  rm -f "$CONTAINER_DECLARATION"
+}
+trap cleanup EXIT
 
 echo "Deploying $IMAGE to $INSTANCE ($ZONE)..."
 
-# Pull latest image and restart container on the VM
-gcloud compute ssh "$INSTANCE" \
+cat > "$CONTAINER_DECLARATION" <<EOF
+spec:
+  containers:
+  - name: lucibot
+    image: $IMAGE
+    stdin: false
+    tty: false
+  restartPolicy: Always
+EOF
+
+gcloud compute instances add-metadata "$INSTANCE" \
+  --quiet \
   --project="$PROJECT" \
   --zone="$ZONE" \
-  --command="
-    docker-credential-gcr configure-docker --registries=us-west1-docker.pkg.dev &&
-    docker pull $IMAGE &&
-    docker ps -q | xargs -r docker stop &&
-    docker run -d --restart=always $IMAGE
-  "
+  --metadata-from-file="gce-container-declaration=$CONTAINER_DECLARATION"
+
+gcloud compute instances reset "$INSTANCE" \
+  --quiet \
+  --project="$PROJECT" \
+  --zone="$ZONE"
 
 echo "Deploy complete."

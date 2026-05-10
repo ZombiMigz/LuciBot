@@ -1,8 +1,14 @@
-name: Build and Push Docker Image
+name: Build, Push, and Deploy Docker Image
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Image tag to deploy
+        required: false
+        default: latest
 
 env:
   REGISTRY_URL: us-west1-docker.pkg.dev/lucibot-493305/lucibot
@@ -35,3 +41,26 @@ jobs:
         run: |
           docker build -t ${{ env.REGISTRY_URL }}/lucibot:latest ./bot
           docker push ${{ env.REGISTRY_URL }}/lucibot:latest
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/707541527522/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: github-actions-deploy-lucibot@lucibot-493305.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy image
+        env:
+          IMAGE_TAG: ${{ github.event.inputs.tag || 'latest' }}
+        run: sh deploy/deploy.sh
