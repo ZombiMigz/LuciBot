@@ -1,7 +1,7 @@
 .PHONY: deploy logs
 
 deploy:
-	sh deploy.sh
+	sh deploy.sh $(TAG)
 
 logs:
 	sh logs.sh
